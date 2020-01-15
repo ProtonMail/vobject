@@ -6,7 +6,7 @@ use DateTime;
 use DateTimeZone;
 use PHPUnit\Framework\TestCase;
 
-class FastForwardTest extends TestCase
+class FastForwardBeforeTest extends TestCase
 {
     const FF_TIMEOUT = 1000000; // in usec
 
@@ -14,13 +14,13 @@ class FastForwardTest extends TestCase
     {
         $ru = getrusage();
         $startTime = $ru['ru_utime.tv_sec'] * 1000000 + $ru['ru_utime.tv_usec'];
-        $ruleIterator->fastForward($ffDate);
+        $ruleIterator->fastForward($ffDate, true);
         $ru = getrusage();
         $endTime = $ru['ru_utime.tv_sec'] * 1000000 + $ru['ru_utime.tv_usec'];
         $this->assertLessThan(self::FF_TIMEOUT, $endTime - $startTime);
     }
 
-    public function testFastForwardYearlyBasic()
+    public function testFastForwardBeforeYearlyBasic()
     {
         $startDate = new DateTime('1970-10-23 00:00:00', new DateTimeZone('zulu'));
         $ffDate = new DateTime('midnight', new DateTimeZone('zulu'));
@@ -32,116 +32,142 @@ class FastForwardTest extends TestCase
         $year = 60 * 60 * 24 * 365;
         $expected = (new DateTime())
             ->setTimezone(new DateTimeZone('zulu'))
-            ->setDate(99999, 10, 23)
+            ->setDate(99998, 10, 23)
             ->setTime(0, 0, 0)
             ->getTimestamp();
         $this->assertEquals($expected, $rrule->current()->getTimestamp());
+
+        $rrule->next();
+        $expected += $year;
+        $this->assertEquals($expected, $rrule->current()->getTimestamp());
+
         $rrule->next();
         // It's a leap
         $expected += $year + 24 * 60 * 60;
         $this->assertEquals($expected, $rrule->current()->getTimestamp());
+
         $rrule->next();
         $expected += $year;
         $this->assertEquals($expected, $rrule->current()->getTimestamp());
+
         $rrule->next();
         $expected += $year;
         $this->assertEquals($expected, $rrule->current()->getTimestamp());
+
         $rrule->next();
         $expected += $year;
         $this->assertEquals($expected, $rrule->current()->getTimestamp());
+
         $rrule->next();
         // leap
         $expected += $year + 24 * 60 * 60;
         $this->assertEquals($expected, $rrule->current()->getTimestamp());
+
         $rrule->next();
         $expected += $year;
         $this->assertEquals($expected, $rrule->current()->getTimestamp());
+
         $rrule->next();
         $expected += $year;
         $this->assertEquals($expected, $rrule->current()->getTimestamp());
+
         $rrule->next();
         $expected += $year;
         $this->assertEquals($expected, $rrule->current()->getTimestamp());
+
         $rrule->next();
         // leap
         $expected += $year + 24 * 60 * 60;
         $this->assertEquals($expected, $rrule->current()->getTimestamp());
+
         $rrule->next();
     }
 
-
-
-    public function testFastForwardYearlyByYearDay()
+    public function testFastForwardBeforeYearlyByYearDay()
     {
         $startDate = new \DateTime('1970-10-23 00:00:00', new \DateTimeZone('zulu'));
         $ffDate = new \DateTime('midnight', new DateTimeZone('zulu'));
-        $ffDate->setDate(99998, 12, 31);
+        $ffDate->setDate(99999, 1, 5);
         $rrule = new RRuleIterator('FREQ=YEARLY;BYYEARDAY=1,20,300', $startDate);
 
         $this->fastForward($rrule, $ffDate);
 
+        // 1st day
         $day = 60 * 60 * 24;
         $expected = (new DateTime())
             ->setTimezone(new DateTimeZone('zulu'))
-            ->setDate(99999, 1, 1)// 20th day
+            ->setDate(99999, 1, 1)
             ->setTime(0, 0, 0)
             ->getTimestamp();
         $this->assertEquals($expected, $rrule->current()->getTimestamp());
+
+        // 20th day
         $rrule->next();
-        // 300th day
         $expected += 19 * $day;
         $this->assertEquals($expected, $rrule->current()->getTimestamp());
+
+        // 300th day
         $rrule->next();
-        // 1st day
         $expected += 280 * $day;
         $this->assertEquals($expected, $rrule->current()->getTimestamp());
-        // 20th day
+
+        // 1st day
         $expected += 66 * $day;
         $rrule->next();
         $this->assertEquals($expected, $rrule->current()->getTimestamp());
-        // 300th day
+
+        // 20th day
         $rrule->next();
         $expected += 19 * $day;
         $this->assertEquals($expected, $rrule->current()->getTimestamp());
+
+        // 300th day
         $rrule->next();
         $expected += 280 * $day;
         $this->assertEquals($expected, $rrule->current()->getTimestamp());
-        $rrule->next();
+
         // 1st day (leap year, we have 366 days in this year)
+        $rrule->next();
         $expected += 67 * $day;
         $this->assertEquals($expected, $rrule->current()->getTimestamp());
+
+        // 20th day
         $rrule->next();
         $expected += 19 * $day;
         $this->assertEquals($expected, $rrule->current()->getTimestamp());
     }
 
-    public function testFastForwardYearlyByWeekNo()
+    public function testFastForwardBeforeYearlyByWeekNo()
     {
         $startDate = new \DateTime('1970-10-23 00:00:00', new \DateTimeZone('zulu'));
         $ffDate = new \DateTime('midnight', new DateTimeZone('zulu'));
-        $ffDate->setDate(99999, 1, 1);
+        $ffDate->setDate(99999, 1, 5);
         $rrule = new RRuleIterator('FREQ=YEARLY;BYWEEKNO=1,20', $startDate);
 
         $this->fastForward($rrule, $ffDate);
 
         $day = 60 * 60 * 24;
         $week = 7 * $day;
+
+        // 1st week
         $expected = (new DateTime())
             ->setTimezone(new DateTimeZone('zulu'))
-            ->setDate(99999, 1, 4)// 1st day
+            ->setDate(99999, 1, 4)
             ->setTime(0, 0, 0)
             ->getTimestamp();
         $this->assertEquals($expected, $rrule->current()->getTimestamp());
+
+        // 20st week
         $rrule->next();
         $expected += $week * 19;
         $this->assertEquals($expected, $rrule->current()->getTimestamp());
     }
 
-    public function testFastForwardYearlyAdvanced()
+    public function testFastForwardBeforeYearlyAdvanced()
     {
         $startDate = new \DateTime('1970-10-23 12:34:56', new \DateTimeZone('zulu'));
         $ffDate = new \DateTime('midnight', new DateTimeZone('zulu'));
-        $ffDate->setDate(9999, 1, 20)->setTime(0, 0, 13);
+        $ffDate->setDate(10000, 1, 2)->setTime(8, 44, 13);
         $rrule = new RRuleIterator('FREQ=YEARLY;INTERVAL=2;BYMONTH=1;BYDAY=SU;BYHOUR=8,9;BYMINUTE=30', $startDate);
 
         $this->fastForward($rrule, $ffDate);
@@ -201,11 +227,11 @@ class FastForwardTest extends TestCase
         $this->assertEquals($expected, $rrule->current()->getTimestamp());
     }
 
-    public function testFastForwardMonthlyBasic()
+    public function testFastForwardBeforeMonthlyBasic()
     {
         $startDate = new \DateTime('1970-10-23 22:42:31', new \DateTimeZone('zulu'));
         $ffDate = new \DateTime('midnight', new DateTimeZone('zulu'));
-        $ffDate->setDate(18000, 1, 1);
+        $ffDate->setDate(18000, 1, 30);
         $rrule = new RRuleIterator('FREQ=MONTHLY', $startDate);
 
         $this->fastForward($rrule, $ffDate);
@@ -246,12 +272,12 @@ class FastForwardTest extends TestCase
         $this->assertEquals($expected, $rrule->current()->getTimestamp());
     }
 
-    public function testFastForwardMonthly31thDay()
+    public function testFastForwardBeforeMonthly31thDay()
     {
         $timezone = 'America/New_York';
         $startDate = new \DateTime('1970-01-31 00:00:00', new \DateTimeZone($timezone));
         $ffDate = new \DateTime('midnight', new DateTimeZone('zulu'));
-        $ffDate->setDate(18000, 1, 1);
+        $ffDate->setDate(18000, 2, 1);
         $rrule = new RRuleIterator('FREQ=MONTHLY', $startDate);
 
         $this->fastForward($rrule, $ffDate);
@@ -292,12 +318,13 @@ class FastForwardTest extends TestCase
         $this->assertEquals($expected, $rrule->current()->getTimestamp());
     }
 
-    public function testFastForwardMonthlyAdvanced()
+    public function testFastForwardBeforeMonthlyAdvanced()
     {
         $timezone = 'America/New_York';
         $startDate = new \DateTime('1970-01-31 00:00:00', new DateTimeZone($timezone));
         $ffDate = new \DateTime('midnight', new DateTimeZone('zulu'));
-        $ffDate->setDate(8000, 1, 1);
+        $ffDate->setDate(8000, 1, 6);
+        // every 2 months on the 1st Monday, 2nd Tuesday, 3rd Wednesday and 4th Thursday
         $rrule = new RRuleIterator('FREQ=MONTHLY;INTERVAL=2;BYDAY=1MO,2TU,3WE,4TH', $startDate);
 
         $this->fastForward($rrule, $ffDate);
@@ -344,12 +371,12 @@ class FastForwardTest extends TestCase
         $this->assertEquals($expected, $rrule->current()->getTimestamp());
     }
 
-    public function testFastForwardDailyBasic()
+    public function testFastForwardBeforeDailyBasic()
     {
         $timezone = 'America/New_York';
         $startDate = new \DateTime('1970-10-23 00:00:00', new \DateTimeZone($timezone));
         $ffDate = new \DateTime('midnight', new DateTimeZone('zulu'));
-        $ffDate->setDate(4000, 1, 1);
+        $ffDate->setDate(4000, 1, 2);
         $rrule = new RRuleIterator('FREQ=DAILY', $startDate);
 
         $this->fastForward($rrule, $ffDate);
@@ -384,12 +411,13 @@ class FastForwardTest extends TestCase
         $this->assertEquals($expected, $rrule->current()->getTimestamp());
     }
 
-    public function testFastForwardDailyAdvanced()
+    public function testFastForwardBeforeDailyAdvanced()
     {
         $timezone = 'America/New_York';
         $startDate = new \DateTime('1970-10-23 00:00:00', new \DateTimeZone($timezone));
-        $ffDate = new \DateTime('midnight', new DateTimeZone('zulu'));
-        $ffDate->setDate(4000, 1, 1);
+        $ffDate = new \DateTime('midnight', new DateTimeZone($timezone));
+        $ffDate->setDate(4000, 1, 4)->setTime(16, 30, 0);
+        // every 10 days at 16, 17 and 18
         $rrule = new RRuleIterator('FREQ=DAILY;BYHOUR=16,17,18;INTERVAL=10', $startDate);
 
         $this->fastForward($rrule, $ffDate);
@@ -427,6 +455,47 @@ class FastForwardTest extends TestCase
 
         // 16:00
         $expected += 10 * 24 * 60 * 60 - 2 * 60 * 60;
+        $rrule->next();
+        $this->assertEquals($expected, $rrule->current()->getTimestamp());
+    }
+
+    public function testFastForwardBeforeHourlyBasic()
+    {
+        $timezone = 'America/New_York';
+        $startDate = new \DateTime('1970-10-23 00:12:34', new \DateTimeZone($timezone));
+        $ffDate = new \DateTime('midnight', new DateTimeZone($timezone));
+        $ffDate->setDate(4000, 1, 2)->setTime(2, 0, 0);
+        $rrule = new RRuleIterator('FREQ=HOURLY', $startDate);
+
+        $this->fastForward($rrule, $ffDate);
+
+        $expected = (new DateTime('midnight', new DateTimeZone($timezone)))
+            ->setDate(4000, 1, 2)
+            ->setTime(1, 12, 34)
+            ->getTimestamp();
+        $this->assertEquals($expected, $rrule->current()->getTimestamp());
+
+        $expected += 60 * 60;
+        $rrule->next();
+        $this->assertEquals($expected, $rrule->current()->getTimestamp());
+
+        $expected += 60 * 60;
+        $rrule->next();
+        $this->assertEquals($expected, $rrule->current()->getTimestamp());
+
+        $expected += 60 * 60;
+        $rrule->next();
+        $this->assertEquals($expected, $rrule->current()->getTimestamp());
+
+        $expected += 60 * 60;
+        $rrule->next();
+        $this->assertEquals($expected, $rrule->current()->getTimestamp());
+
+        $expected += 60 * 60;
+        $rrule->next();
+        $this->assertEquals($expected, $rrule->current()->getTimestamp());
+
+        $expected += 60 * 60;
         $rrule->next();
         $this->assertEquals($expected, $rrule->current()->getTimestamp());
     }

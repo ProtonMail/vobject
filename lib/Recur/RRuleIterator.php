@@ -127,37 +127,54 @@ class RRuleIterator implements Iterator
     }
 
     /**
-     * This method allows you to quickly go to the next occurrence after the
+     * This method allows you to quickly go to the next occurrence before or after the
      * specified date.
      *
      * @param DateTimeInterface $dt
+     * @param bool $before If set to true the Iterator will be set to the occurrence before $dt
      */
-    public function fastForward(DateTimeInterface $dt)
+    public function fastForward(DateTimeInterface $dt, $before = false)
     {
+        $previousDate = null;
+
+        // We don't do any fast forwarding if we have a count limit as we cannot do jumps
         if (!isset($this->count)) {
+            $frequencyCoeff = 1;
+
+            switch ($this->frequency) {
+                case 'hourly':
+                    $frequencyCoeff = 1 / 24;
+                    break;
+                case 'daily':
+                    $frequencyCoeff = 1;
+                    break;
+                case 'weekly':
+                    $frequencyCoeff = 7;
+                    break;
+                case 'monthly':
+                    $frequencyCoeff = 30;
+                    break;
+                case 'yearly':
+                    $frequencyCoeff = 365;
+                    break;
+            }
+
+            // If we want the occurrence before, we fast forward to one frequency before the dt and then advance by one
+            // increment only to make sure that we have the previous occurrence
+            if ($before) {
+                $originalDt = clone $dt;
+                $dt = $dt->modify('- ' . ($frequencyCoeff * 24 * $this->interval) . ' hours');
+            }
+
             do {
                 $diff = $this->currentDate->diff($dt);
-                switch ($this->frequency) {
-                    case 'hourly':
-                        $i = $diff->days * 24;
-                        break;
-                    case 'daily':
-                        $i = $diff->days;
-                        break;
-                    case 'weekly':
-                        $i = $diff->days / 7;
-                        break;
-                    case 'monthly':
-                        $i = $diff->days / 30;
-                        break;
-                    case 'yearly':
-                        $i = $diff->days / 365;
-                        break;
-                }
+                $i = $diff->days / $frequencyCoeff;
+
                 $i /= $this->interval;
                 $i /= 4;
                 $i = floor($i);
                 $i = max(1, $i);
+
                 do {
                     $previousDate = clone $this->currentDate;
                     $this->next($i);
@@ -167,9 +184,15 @@ class RRuleIterator implements Iterator
                 // do one step to avoid deadlock
                 $this->next();
             } while ($i > 5 && $this->valid() && $this->currentDate < $dt);
+
+            // if we want the previous occurrence we restore the original dt
+            if ($before) {
+                $dt = $originalDt;
+            }
         }
 
         while ($this->valid() && $this->currentDate < $dt) {
+            $previousDate = clone $this->currentDate;
             $this->next();
         }
 
@@ -177,7 +200,13 @@ class RRuleIterator implements Iterator
             // We don't know the counter at this point anymore
             $this->counter = NAN;
         }
+
+        if ($before) {
+            $this->currentDate = $previousDate;
+        }
     }
+
+
 
     /**
      * The reference start date/time for the rrule.
