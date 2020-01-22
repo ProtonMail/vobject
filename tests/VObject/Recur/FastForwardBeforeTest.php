@@ -499,4 +499,30 @@ class FastForwardBeforeTest extends TestCase
         $rrule->next();
         $this->assertEquals($expected, $rrule->current()->getTimestamp());
     }
+
+    public function testFastForwardBeforeNotInFrequency()
+    {
+        $timezone = 'America/New_York';
+        $startDate = new \DateTime('1970-10-23 00:00:00', new \DateTimeZone($timezone));
+        $ffDate = new \DateTime('midnight', new DateTimeZone($timezone));
+        $ffDate->setDate(2023, 3, 15)->setTime(1, 0, 0);
+        // every leap years
+        $rrule = new RRuleIterator('FREQ=YEARLY;BYMONTH=2;BYMONTHDAY=29', $startDate);
+
+        $this->fastForward($rrule, $ffDate);
+
+        $expected = (new DateTime('midnight', new DateTimeZone($timezone)))
+            ->setDate(2020, 2, 29)
+            ->setTime(0, 0, 0)
+            ->getTimestamp();
+        $this->assertEquals($expected, $rrule->current()->getTimestamp());
+
+        // 17:00
+        $expected = (new DateTime('midnight', new DateTimeZone($timezone)))
+            ->setDate(2024, 2, 29)
+            ->setTime(0, 0, 0)
+            ->getTimestamp();
+        $rrule->next();
+        $this->assertEquals($expected, $rrule->current()->getTimestamp());
+    }
 }

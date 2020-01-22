@@ -191,6 +191,12 @@ class RRuleIterator implements Iterator
             }
         }
 
+        // In case we want the previous occurrence, it's possible that we miss it by jumping if there is not always an
+        // occurrence inside the frequency*interval window (can be caused by BYxxx conditions)
+        if ($before && $this->currentDate > $dt) {
+            $this->rewind();
+        }
+
         while ($this->valid() && $this->currentDate < $dt) {
             $previousDate = clone $this->currentDate;
             $this->next();
@@ -205,8 +211,6 @@ class RRuleIterator implements Iterator
             $this->currentDate = $previousDate;
         }
     }
-
-
 
     /**
      * The reference start date/time for the rrule.
