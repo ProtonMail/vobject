@@ -127,89 +127,117 @@ class RRuleIterator implements Iterator
     }
 
     /**
-     * This method allows you to quickly go to the next occurrence before or after the
-     * specified date.
+     * This method allows you to quickly go to the next occurrence after the specified date.
      *
      * @param DateTimeInterface $dt
-     * @param bool $before If set to true the Iterator will be set to the occurrence before $dt
      */
-    public function fastForward(DateTimeInterface $dt, $before = false)
+    public function fastForward(DateTimeInterface $dt)
     {
-        $previousDate = null;
-
-        // We don't do any fast forwarding if we have a count limit as we cannot do jumps
+        // We don't do any jumps if we have a count limit as we have to keep track of the number of occurrences
         if (!isset($this->count)) {
-            $frequencyCoeff = 1;
+            $this->jumpForward($dt);
+        }
 
-            switch ($this->frequency) {
-                case 'hourly':
-                    $frequencyCoeff = 1 / 24;
-                    break;
-                case 'daily':
-                    $frequencyCoeff = 1;
-                    break;
-                case 'weekly':
-                    $frequencyCoeff = 7;
-                    break;
-                case 'monthly':
-                    $frequencyCoeff = 30;
-                    break;
-                case 'yearly':
-                    $frequencyCoeff = 365;
-                    break;
-            }
+        while ($this->valid() && $this->currentDate < $dt) {
+            $this->next();
+        }
+    }
+
+    /**
+     * This method allows you to quickly go to the next occurrence before the specified date.
+     *
+     * @param DateTimeInterface $dt
+     */
+    public function fastForwardBefore(DateTimeInterface $dt)
+    {
+        // We don't do any jumps if we have a count limit as we have to keep track of the number of occurrences
+        if (!isset($this->count)) {
+            $frequencyCoeff = $this->getFrequencyCoeff();
 
             // If we want the occurrence before, we fast forward to one frequency before the dt and then advance by one
             // increment only to make sure that we have the previous occurrence
-            if ($before) {
-                $originalDt = clone $dt;
-                $dt = $dt->modify('- ' . ($frequencyCoeff * 24 * $this->interval) . ' hours');
-            }
+            $potentialDt = clone $dt;
+            $potentialDt = $potentialDt->modify('- ' . ($frequencyCoeff * 24 * $this->interval) . ' hours');
 
-            do {
-                $diff = $this->currentDate->diff($dt);
-                $i = $diff->days / $frequencyCoeff;
+            $this->jumpForward($potentialDt);
 
-                $i /= $this->interval;
-                $i /= 4;
-                $i = floor($i);
-                $i = max(1, $i);
-
-                do {
-                    $previousDate = clone $this->currentDate;
-                    $this->next($i);
-                } while ($this->valid() && $this->currentDate < $dt);
-
-                $this->currentDate = $previousDate;
-                // do one step to avoid deadlock
-                $this->next();
-            } while ($i > 5 && $this->valid() && $this->currentDate < $dt);
-
-            // if we want the previous occurrence we restore the original dt
-            if ($before) {
-                $dt = $originalDt;
+            // It's possible that we miss the previous occurrence by jumping if there is not always an occurrence inside
+            // the frequency*interval window (can be caused by BYxxx conditions), in this case we reset the rrule and
+            // do the normal forward.
+            if ($this->currentDate >= $dt) {
+                $this->rewind();
             }
         }
 
-        // In case we want the previous occurrence, it's possible that we miss it by jumping if there is not always an
-        // occurrence inside the frequency*interval window (can be caused by BYxxx conditions)
-        if ($before && $this->currentDate > $dt) {
-            $this->rewind();
-        }
-
+        $previousDate = null;
         while ($this->valid() && $this->currentDate < $dt) {
             $previousDate = clone $this->currentDate;
             $this->next();
         }
 
-        if (!isset($this->count)) {
-            // We don't know the counter at this point anymore
-            $this->counter = NAN;
+        isset($previousDate) && $this->currentDate = $previousDate;
+    }
+
+    /**
+     * Return the frequency in number of days.
+     *
+     * @return float|int|null
+     */
+    private function getFrequencyCoeff()
+    {
+        $frequencyCoeff = null;
+
+        switch ($this->frequency) {
+            case 'hourly':
+                $frequencyCoeff = 1 / 24;
+                break;
+            case 'daily':
+                $frequencyCoeff = 1;
+                break;
+            case 'weekly':
+                $frequencyCoeff = 7;
+                break;
+            case 'monthly':
+                $frequencyCoeff = 30;
+                break;
+            case 'yearly':
+                $frequencyCoeff = 365;
+                break;
         }
 
-        if ($before) {
+        return $frequencyCoeff;
+    }
+
+    /**
+     * Perform a fast forward by doing jumps based on the distance of the requested date and the frequency of the
+     * recurrence rule.
+     *
+     * @param DateTimeInterface $dt
+     */
+    private function jumpForward(DateTimeInterface $dt)
+    {
+        $frequencyCoeff = $this->getFrequencyCoeff();
+
+        do {
+            $diff = $this->currentDate->diff($dt);
+            $i = $diff->days / $frequencyCoeff;
+            $i /= $this->interval;
+            $i /= 4;
+            $i = floor($i);
+            $i = (int) max(1, $i);
+
+            do {
+                $previousDate = clone $this->currentDate;
+                $this->next($i);
+            } while ($this->valid() && $this->currentDate < $dt);
+
             $this->currentDate = $previousDate;
-        }
+            // do one step to avoid deadlock
+            $this->next();
+        } while ($i > 5 && $this->valid() && $this->currentDate < $dt);
+
+        // We don't know the counter at this point anymore
+        $this->counter = NAN;
     }
 
     /**

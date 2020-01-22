@@ -69,8 +69,6 @@ class FastForwardTest extends TestCase
         $rrule->next();
     }
 
-
-
     public function testFastForwardYearlyByYearDay()
     {
         $startDate = new \DateTime('1970-10-23 00:00:00', new \DateTimeZone('zulu'));

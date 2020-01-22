@@ -14,7 +14,7 @@ class FastForwardBeforeTest extends TestCase
     {
         $ru = getrusage();
         $startTime = $ru['ru_utime.tv_sec'] * 1000000 + $ru['ru_utime.tv_usec'];
-        $ruleIterator->fastForward($ffDate, true);
+        $ruleIterator->fastForwardBefore($ffDate);
         $ru = getrusage();
         $endTime = $ru['ru_utime.tv_sec'] * 1000000 + $ru['ru_utime.tv_usec'];
         $this->assertLessThan(self::FF_TIMEOUT, $endTime - $startTime);
@@ -517,7 +517,7 @@ class FastForwardBeforeTest extends TestCase
             ->getTimestamp();
         $this->assertEquals($expected, $rrule->current()->getTimestamp());
 
-        // 17:00
+        // the next leap year
         $expected = (new DateTime('midnight', new DateTimeZone($timezone)))
             ->setDate(2024, 2, 29)
             ->setTime(0, 0, 0)
