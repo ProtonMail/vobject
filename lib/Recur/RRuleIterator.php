@@ -152,21 +152,7 @@ class RRuleIterator implements Iterator
     {
         // We don't do any jumps if we have a count limit as we have to keep track of the number of occurrences
         if (!isset($this->count)) {
-            $frequencyCoeff = $this->getFrequencyCoeff();
-
-            // If we want the occurrence before, we fast forward to one frequency before the dt and then advance by one
-            // increment only to make sure that we have the previous occurrence
-            $potentialDt = clone $dt;
-            $potentialDt = $potentialDt->modify('- ' . ($frequencyCoeff * 24 * $this->interval) . ' hours');
-
-            $this->jumpForward($potentialDt);
-
-            // It's possible that we miss the previous occurrence by jumping if there is not always an occurrence inside
-            // the frequency*interval window (can be caused by BYxxx conditions), in this case we reset the rrule and
-            // do the normal forward.
-            if ($this->currentDate >= $dt) {
-                $this->rewind();
-            }
+            $this->jumpForward($dt);
         }
 
         $previousDate = null;
@@ -210,7 +196,7 @@ class RRuleIterator implements Iterator
 
     /**
      * Perform a fast forward by doing jumps based on the distance of the requested date and the frequency of the
-     * recurrence rule.
+     * recurrence rule. Will return the last occurrence before the requested date.
      *
      * @param DateTimeInterface $dt
      */
@@ -219,25 +205,43 @@ class RRuleIterator implements Iterator
         $frequencyCoeff = $this->getFrequencyCoeff();
 
         do {
+            // We estimate the number of jumps to reach $dt. This is an estimate as the number of generated event within
+            // a frequency interval is assumed to be 1 (in reality, it could be anything >= 0)
             $diff = $this->currentDate->diff($dt);
-            $i = $diff->days / $frequencyCoeff;
-            $i /= $this->interval;
-            $i /= 4;
-            $i = floor($i);
-            $i = (int) max(1, $i);
+            $estimatedOccurrences = $diff->days / $frequencyCoeff;
+            $estimatedOccurrences /= $this->interval;
+
+            // We want to do small jumps to not overshot
+            $jumpSize = floor($estimatedOccurrences / 4);
+            $jumpSize = (int) max(1, $jumpSize);
+
+            // If we are too close to the desired occurrence, we abort the jumping
+            if ($jumpSize <= 4) {
+                break;
+            }
 
             do {
                 $previousDate = clone $this->currentDate;
-                $this->next($i);
+                $this->next($jumpSize);
             } while ($this->valid() && $this->currentDate < $dt);
 
-            $this->currentDate = $previousDate;
-            // do one step to avoid deadlock
+            $this->currentDate = clone $previousDate;
+            // Do one step to avoid deadlock
             $this->next();
-        } while ($i > 5 && $this->valid() && $this->currentDate < $dt);
+        } while ($this->valid() && $this->currentDate < $dt);
+
+        // We undo the last next as it made the $this->currentDate < $dt false
+        // we want the last that validate it.
+        isset($previousDate) && $this->currentDate = clone $previousDate;
 
         // We don't know the counter at this point anymore
         $this->counter = NAN;
+
+        // It's possible that we miss the previous occurrence by jumping too much, in this case we reset the rrule and
+        // do the normal forward.
+        if ($this->currentDate >= $dt) {
+            $this->rewind();
+        }
     }
 
     /**
