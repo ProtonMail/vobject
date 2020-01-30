@@ -9,6 +9,18 @@ use PHPUnit\Framework\TestCase;
 
 class RRuleIteratorTest extends TestCase
 {
+    /**
+     * @expectedException \Sabre\VObject\InvalidDataException
+     */
+    public function testInvalidMissingFreq()
+    {
+        $this->parse(
+            'COUNT=6;BYMONTHDAY=24;BYMONTH=1',
+            '2011-04-07 00:00:00',
+            []
+        );
+    }
+
     public function testHourly()
     {
         $this->parse(
