@@ -6,14 +6,13 @@ use DateTime;
 use DateTimeImmutable;
 use DateTimeZone;
 use PHPUnit\Framework\TestCase;
+use Sabre\VObject\InvalidDataException;
 
 class RRuleIteratorTest extends TestCase
 {
-    /**
-     * @expectedException \Sabre\VObject\InvalidDataException
-     */
     public function testInvalidMissingFreq()
     {
+        $this->expectException(InvalidDataException::class);
         $this->parse(
             'COUNT=6;BYMONTHDAY=24;BYMONTH=1',
             '2011-04-07 00:00:00',
