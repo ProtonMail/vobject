@@ -143,8 +143,6 @@ class RRuleIterator implements Iterator
 
     /**
      * This method allows you to quickly go to the next occurrence before the specified date.
-     *
-     * @param DateTimeInterface $dt
      */
     public function fastForwardBefore(DateTimeInterface $dt)
     {
@@ -247,8 +245,6 @@ class RRuleIterator implements Iterator
      * Perform a fast forward by doing jumps based on the distance of the requested date and the frequency of the
      * recurrence rule. Will set the position of the iterator to the last occurrence before the requested date. If the
      * fast forwarding failed, the position will be reset.
-     *
-     * @param DateTimeInterface $dt
      */
     private function jumpForward(DateTimeInterface $dt)
     {
