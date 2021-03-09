@@ -454,6 +454,17 @@ class RRuleIteratorTest extends TestCase
         );
     }
 
+    public function testYearlyByMonthDay()
+    {
+        $this->expectException(InvalidDataException::class);
+        $this->expectExceptionMessage('BYMONTH should be specified with BYMONTHDAY');
+        $this->parse(
+            'FREQ=YEARLY;BYMONTHDAY=22',
+            '2011-04-07 00:00:00',
+            []
+        );
+    }
+
     public function testYearlyByMonthInvalidValue1()
     {
         $this->expectException(InvalidDataException::class);

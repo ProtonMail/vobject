@@ -1006,6 +1006,10 @@ class RRuleIterator implements Iterator
         if (isset($this->count) && isset($this->until)) {
             throw new InvalidDataException('Can not have both UNTIL and COUNT property at the same time');
         }
+
+        if (isset($this->byMonthDay) && 'yearly' === $this->frequency && !isset($this->byMonth)) {
+            throw new InvalidDataException('BYMONTH should be specified with BYMONTHDAY');
+        }
     }
 
     /**
