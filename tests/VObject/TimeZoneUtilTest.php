@@ -462,6 +462,21 @@ HI;
             'origin' => 'UTC-05:00',
             'expected' => 'America/Lima',
         ];
+
+        yield '-5' => [
+            'origin' => '-5',
+            'expected' => 'America/Lima',
+        ];
+
+        yield '-05' => [
+            'origin' => '-05',
+            'expected' => 'America/Lima',
+        ];
+
+        yield '-05:00' => [
+            'origin' => '-05:00',
+            'expected' => 'America/Lima',
+        ];
     }
 
     /**

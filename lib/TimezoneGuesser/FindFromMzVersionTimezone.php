@@ -22,7 +22,12 @@ class FindFromMzVersionTimezone implements TimezoneFinder
 
         $trailingChar = (int) $tzid[strlen($tzid)-1];
         if ($trailingChar <= 9 && $trailingChar >= 1) {
-            $tz = TimeZoneUtil::getTimeZone(substr($tzid, 0, strrpos($tzid, ' ')));
+            $emptySpace = strrpos($tzid, ' ');
+            if ($emptySpace === false) {
+                return null;
+            }
+
+            $tz = TimeZoneUtil::getTimeZone(substr($tzid, 0, $emptySpace));
             if ($tz->getName() === 'UTC') {
                 return null;
             }

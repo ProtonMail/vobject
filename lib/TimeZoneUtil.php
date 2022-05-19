@@ -6,6 +6,7 @@ use DateTimeZone;
 use InvalidArgumentException;
 use Sabre\VObject\TimezoneGuesser\FindFromMzVersionTimezone;
 use Sabre\VObject\TimezoneGuesser\FindFromOffset;
+use Sabre\VObject\TimezoneGuesser\FindFromOffsetName;
 use Sabre\VObject\TimezoneGuesser\FindFromOutlookCities;
 use Sabre\VObject\TimezoneGuesser\FindFromTimezoneIdentifier;
 use Sabre\VObject\TimezoneGuesser\FindFromTimezoneMap;
@@ -46,6 +47,7 @@ class TimeZoneUtil
         $this->addFinder('lowercase', new LowercaseTimezoneIdentifier());
         $this->addFinder('outlookCities', new FindFromOutlookCities());
         $this->addFinder('version', new FindFromMzVersionTimezone());
+        $this->addFinder('offsetName', new FindFromOffsetName());
     }
 
     private static function getInstance(): self
