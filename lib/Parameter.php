@@ -47,12 +47,12 @@ class Parameter extends Node
      *
      * It's recommended to use the create:: factory method instead.
      *
-     * @param string $name
+     * @param string|null $name
      * @param string $value
      */
     public function __construct(Document $root, $name, $value = null)
     {
-        $this->name = strtoupper($name);
+        $this->name = is_null($name) ? '' : strtoupper($name);
         $this->root = $root;
         if (is_null($name)) {
             $this->noName = true;

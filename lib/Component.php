@@ -212,14 +212,14 @@ class Component extends Node
      * string ("HOME.EMAIL"). If you want to search on a specific property that
      * has not been assigned a group, specify ".EMAIL".
      *
-     * @param string $name
+     * @param string|null $name
      *
      * @return array
      */
     public function select($name)
     {
         $group = null;
-        $name = strtoupper($name);
+        $name = is_null($name) ? '' : strtoupper($name);
         if (false !== strpos($name, '.')) {
             list($group, $name) = explode('.', $name, 2);
         }
@@ -238,7 +238,7 @@ class Component extends Node
                 return array_filter(
                     $result,
                     function ($child) use ($group) {
-                        return $child instanceof Property && strtoupper($child->group) === $group;
+                        return $child instanceof Property && strtoupper($child->group ?? '') === $group;
                     }
                 );
             }
