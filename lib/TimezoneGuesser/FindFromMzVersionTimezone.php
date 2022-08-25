@@ -14,7 +14,7 @@ use Sabre\VObject\TimeZoneUtil;
  */
 class FindFromMzVersionTimezone implements TimezoneFinder
 {
-    public function find(string $tzid, bool $failIfUncertain = false): ?DateTimeZone
+    public function find(string $tzid, ?bool $failIfUncertain = false): ?DateTimeZone
     {
         if (strlen($tzid) < 1) {
             return null;
