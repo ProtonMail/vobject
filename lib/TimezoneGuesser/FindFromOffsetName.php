@@ -35,7 +35,7 @@ class FindFromOffsetName implements TimezoneFinder
         '-11:00' => 'Pacific/Niue',
     ];
 
-    public function find(string $tzid, bool $failIfUncertain = false): ?DateTimeZone
+    public function find(string $tzid, ?bool $failIfUncertain = false): ?DateTimeZone
     {
         // only handle number timezone
         if (strlen($tzid) > 6) {

@@ -8,7 +8,7 @@ use DateTimeZone;
 
 class LowercaseTimezoneIdentifier implements TimezoneFinder
 {
-    public function find(string $tzid, bool $failIfUncertain = false): ?DateTimeZone
+    public function find(string $tzid, ?bool $failIfUncertain = false): ?DateTimeZone
     {
         foreach (DateTimeZone::listIdentifiers() as $timezone) {
             if (strtolower($tzid) === strtolower($timezone)) {
