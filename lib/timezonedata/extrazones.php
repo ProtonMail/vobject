@@ -202,4 +202,5 @@ return [
     'Pacific/Johnston' => 'Pacific/Honolulu',
     'EDT' => 'America/Manaus',
     'America/Godthab' => 'Atlantic/Stanley',
+    'CDT' => 'America/Chicago',
 ];

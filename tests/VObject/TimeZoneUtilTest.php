@@ -434,6 +434,11 @@ HI;
             'expected' => 'America/Manaus',
         ];
 
+        yield 'CDT' => [
+            'origin' => 'CDT',
+            'expected' => 'America/Chicago',
+        ];
+
         if (($handle = fopen(__DIR__ . "/microsoft-timezones-confluence.csv", "r")) !== FALSE) {
             $data = fgetcsv($handle);
             while (($data = fgetcsv($handle)) !== FALSE) {
