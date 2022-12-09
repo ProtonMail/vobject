@@ -113,6 +113,116 @@ ChangeLog
 * #3 Add daily occurrences to nextMonth and NextYear
 * #4 Enhance fast forward speed if no count value has been given
 
+4.5.1 (2022-10-09)
+------------------
+
+* #597: Remove utf8_encode to easily support PHP 8.2 (@phil-davis)
+
+4.5.0 (2022-08-17)
+------------------
+
+* #579: Update .gitattributes (@cedric-anne)
+* #561: PHP 8.1 deprecated support for null values in its APIs (@mstilkerich)
+* #571: Fully ignore invalid lines (@heiglandreas)
+* #564: Fix infinite loop caused by yearly with bySetPos (@liurxliu)
+* #567: Endless loop problem in RRuleIterator::nextDaily (@KristofferFM)
+* #466: Add support for MEMBER in a VCard (@sash04ek)
+* #559: Handle Vobjects without closing tag (@sash04ek)
+* #582: Fix bug in by year day (@KAYLukas)
+
+4.4.3 (2022-07-15)
+------------------
+
+* #577: Ignore multiple same parameter-values (@heiglandreas)
+
+4.4.2 (2022-06-24)
+------------------
+
+* #565: lowercase mailto:-addresses in getNormalizedValue() (@pk1234)
+* #568: Add NICKNAME fallback for VCards without FNs (@Evengard)
+* #573: Component/select: Before uppercasing $child->group, make sure it isn't null (@algernon)
+* #575: Fix encoding detection on PHP 8.1 (@come-nc)
+
+4.4.1 (2021-12-07)
+------------------
+
+ #557: Fix Iterator method signatures and avoid passing null as separator for implode (PHP 8.1 support) (@come-nc)
+
+4.4.0 (2021-11-15)
+------------------
+
+ #548: Allow easier extension of the timezone guessing (@heiglandreas)
+
+4.3.8 (2021-11-14)
+------------------
+
+* #538: fix EventIterator returns wrong end endTime (@floerke)
+* #541: Reordering of the attendees is not a significant change (@floerke)
+* #543: Reordering of vevent is not a significant change (@floerke)
+
+4.3.7 (2021-11-04)
+------------------
+
+* #551: version bump that was missed in 4.3.6 (@phil-davis)
+
+4.3.6 (2021-11-04)
+------------------
+
+* #544: Fix deprecated usages and return types on PHP 8.1 (@cedric-anne)
+
+4.3.5 (2021-02-12)
+------------------
+
+* #523: Fix setting properties with group assignment (@mstilkerich)
+* #532: Make use of until parameter in nextMonthly function (@jaircuevajunior)
+
+4.3.4 (2021-02-04)
+------------------
+
+* #529: Reassign modified date in yearly rrule (@laoneo)
+* #525: Add .gitattributes to reduce package size (@fezfez)
+
+4.3.3 (2020-11-09)
+------------------
+
+* #519: Remove US/Pacific-New obsolete timezone (@phil-davis)
+
+4.3.2 (2020-10-03)
+------------------
+
+* #513: Added Support for PHP 8.0 (@phil-davis)
+
+4.3.1 (2020-07-13)
+------------------
+
+* #510: Fix an incomplete phpdoc type annotation (@mstilkerich)
+* #505: Refactor unit test code for phpunit9 (@phil-davis)
+* #500: Standardize CI (@phil-davis)
+* #496: CI tooling changes (@JeroenVanOort)
+
+4.3.0 (2020-01-31)
+------------------
+
+* Added support for PHP 7.4, dropped support for PHP 7.0 (@phil-davis)
+* #487: Added phpstan coverage, updated testsuite for phpunit8 (@phil-davis, @JeroenVanOort)
+* #495: refactored maps to use ::class notation (@JeroenVanOort)
+
+4.2.2 (2020-01-14)
+------------------
+
+* #465: Add TZ in iTip REPLY iTip messages
+* #486: Add PHONE-NUMBER value type (used for TEL in vCard 3.0)
+
+4.2.1 (2019-12-18)
+------------------
+
+* #469, #451: fix compat with php 7.4
+* #443: prevent running in indefinite loop
+* #449: Preventing creating a component for a root document
+* #450: Fix parse with option Forgiving with trailing equal
+* #459: fixed typo in VCalendar which resulting in usage of the wrong TimeZone
+* #462: Broker::parseEventForOrganizer copies DTSTAMP from $eventInfo that causes broken scheduling
+
 4.2.0 (2019-02-19)
 ------------------
 
@@ -589,7 +699,7 @@ ChangeLog
 * Updated: Windows timezone mapping to latest version from unicode.org
 * Changed: The timezone maps are now loaded in from external files, in
   lib/Sabre/VObject/timezonedata.
-* Added: Fixing badly encoded URL's from google contacts vcards.
+* Added: Fixing badly encoded URL's from Google contacts vcards.
 * Fixed: Issue #68. Couldn't decode properties ending in a colon.
 * Fixed: Issue #72. RecurrenceIterator should respect timezone in the UNTIL
   clause.
@@ -663,7 +773,7 @@ ChangeLog
 * Added: Utility to convert between 2.1, 3.0 and 4.0 vCards.
 * Added: You can now add() multiple parameters to a property in one call.
 * Added: Parameter::has() for easily checking if a parameter value exists.
-* Added: VCard::preferred() to find a preferred email, phone number, etc for a
+* Added: VCard::preferred() to find a preferred email, phone number, etc. for a
   contact.
 * Changed: All $duration properties are now public.
 * Added: A few validators for iCalendar documents.
@@ -860,7 +970,7 @@ ChangeLog
 ------------------
 
 * Fixed: Microsoft re-uses their magic numbers for different timezones,
-  specifically id 2 for both Sarajevo and Lisbon). A workaround was added to
+  (specifically id 2 for both Sarajevo and Lisbon). A workaround was added to
   deal with this.
 
 

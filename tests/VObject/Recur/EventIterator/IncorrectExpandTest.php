@@ -8,13 +8,13 @@ use Sabre\VObject\Component\VCalendar;
 use Sabre\VObject\Reader;
 
 /**
- * This is a unittest for Issue #53.
+ * This is a unit test for Issue #53.
  */
 class IncorrectExpandTest extends TestCase
 {
     use \Sabre\VObject\PHPUnitAssertions;
 
-    public function testExpand()
+    public function testExpand(): void
     {
         $input = <<<ICS
 BEGIN:VCALENDAR

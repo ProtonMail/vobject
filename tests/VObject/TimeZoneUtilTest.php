@@ -14,7 +14,7 @@ class TimeZoneUtilTest extends TestCase
     /**
      * @dataProvider getMapping
      */
-    public function testCorrectTZ($timezoneName)
+    public function testCorrectTZ(string $timezoneName): void
     {
         try {
             $tz = new \DateTimeZone($timezoneName);
@@ -28,7 +28,7 @@ class TimeZoneUtilTest extends TestCase
         }
     }
 
-    public function getMapping()
+    public function getMapping(): array
     {
         $map = array_merge(
             include __DIR__.'/../../lib/timezonedata/windowszones.php',
@@ -58,7 +58,7 @@ class TimeZoneUtilTest extends TestCase
         $this->assertEquals($expected, $actual);
     }
 
-    public function testExchangeMap()
+    public function testExchangeMap(): void
     {
         $vobj = <<<HI
 BEGIN:VCALENDAR
@@ -98,7 +98,7 @@ HI;
         $this->assertEquals($ex->getName(), $tz->getName());
     }
 
-    public function testWhetherMicrosoftIsStillInsane()
+    public function testWhetherMicrosoftIsStillInsane(): void
     {
         $vobj = <<<HI
 BEGIN:VCALENDAR
@@ -123,7 +123,7 @@ HI;
         $this->assertEquals($ex->getName(), $tz->getName());
     }
 
-    public function testUnknownExchangeId()
+    public function testUnknownExchangeId(): void
     {
         $vobj = <<<HI
 BEGIN:VCALENDAR
@@ -163,14 +163,14 @@ HI;
         $this->assertEquals($ex->getName(), $tz->getName());
     }
 
-    public function testEmptyTimeZone()
+    public function testEmptyTimeZone(): void
     {
         $tz = TimeZoneUtil::getTimeZone('');
         $ex = new \DateTimeZone('UTC');
         $this->assertEquals($ex->getName(), $tz->getName());
     }
 
-    public function testWindowsTimeZone()
+    public function testWindowsTimeZone(): void
     {
         $tz = TimeZoneUtil::getTimeZone('Eastern Standard Time');
         $ex = new \DateTimeZone('America/New_York');
@@ -187,7 +187,7 @@ HI;
     /**
      * @dataProvider getPHPTimeZoneIdentifiers
      */
-    public function testTimeZoneIdentifiers($tzid)
+    public function testTimeZoneIdentifiers(string $tzid): void
     {
         $tz = TimeZoneUtil::getTimeZone($tzid);
         $ex = new \DateTimeZone($tzid);
@@ -198,7 +198,7 @@ HI;
     /**
      * @dataProvider getPHPTimeZoneBCIdentifiers
      */
-    public function testTimeZoneBCIdentifiers($tzid)
+    public function testTimeZoneBCIdentifiers(string $tzid): void
     {
         $tz = TimeZoneUtil::getTimeZone($tzid);
         $ex = new \DateTimeZone($tzid);
@@ -206,7 +206,7 @@ HI;
         $this->assertEquals($ex->getName(), $tz->getName());
     }
 
-    public function getPHPTimeZoneIdentifiers()
+    public function getPHPTimeZoneIdentifiers(): array
     {
         // PHPUNit requires an array of arrays
         return array_map(
@@ -217,7 +217,7 @@ HI;
         );
     }
 
-    public function getPHPTimeZoneBCIdentifiers()
+    public function getPHPTimeZoneBCIdentifiers(): array
     {
         // PHPUNit requires an array of arrays
         return array_map(
@@ -228,7 +228,7 @@ HI;
         );
     }
 
-    public function testTimezoneOffset()
+    public function testTimezoneOffset(): void
     {
         $tz = TimeZoneUtil::getTimeZone('GMT-0400', null, true);
 
@@ -240,13 +240,13 @@ HI;
         $this->assertEquals($ex->getName(), $tz->getName());
     }
 
-    public function testTimezoneFail()
+    public function testTimezoneFail(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $tz = TimeZoneUtil::getTimeZone('FooBar', null, true);
+        TimeZoneUtil::getTimeZone('FooBar', null, true);
     }
 
-    public function testFallBack()
+    public function testFallBack(): void
     {
         $vobj = <<<HI
 BEGIN:VCALENDAR
@@ -284,7 +284,7 @@ HI;
         $this->assertEquals($ex->getName(), $tz->getName());
     }
 
-    public function testLjubljanaBug()
+    public function testLjubljanaBug(): void
     {
         $vobj = <<<HI
 BEGIN:VCALENDAR
@@ -330,7 +330,7 @@ HI;
         $this->assertEquals($ex->getName(), $tz->getName());
     }
 
-    public function testWeirdSystemVLICs()
+    public function testWeirdSystemVLICs(): void
     {
         $vobj = <<<HI
 BEGIN:VCALENDAR
@@ -378,7 +378,7 @@ HI;
         $this->assertEquals($ex->getName(), $tz->getName());
     }
 
-    public function testPrefixedOffsetExchangeIdentifier()
+    public function testPrefixedOffsetExchangeIdentifier(): void
     {
         $tz = TimeZoneUtil::getTimeZone('(UTC-05:00) Eastern Time (US & Canada)');
         $ex = new \DateTimeZone('America/New_York');

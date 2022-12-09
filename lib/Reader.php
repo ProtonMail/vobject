@@ -2,6 +2,8 @@
 
 namespace Sabre\VObject;
 
+use Sabre\Xml\LibXMLException;
+
 /**
  * iCalendar/vCard/jCal/jCard/xCal/xCard reader object.
  *
@@ -18,13 +20,13 @@ class Reader
      * If this option is passed to the reader, it will be less strict about the
      * validity of the lines.
      */
-    const OPTION_FORGIVING = 1;
+    public const OPTION_FORGIVING = 1;
 
     /**
      * If this option is turned on, any lines we cannot parse will be ignored
      * by the reader.
      */
-    const OPTION_IGNORE_INVALID_LINES = 2;
+    public const OPTION_IGNORE_INVALID_LINES = 2;
 
     /**
      * If this option is turned on, it will fix unfolding parse error by adding empty space.
@@ -40,18 +42,15 @@ class Reader
      * You can either supply a string, or a readable stream for input.
      *
      * @param string|resource $data
-     * @param int             $options
-     * @param string          $charset
      *
-     * @return Document
+     * @throws ParseException
      */
-    public static function read($data, $options = 0, $charset = 'UTF-8')
+    public static function read($data, int $options = 0, string $charset = 'UTF-8'): ?Document
     {
         $parser = new Parser\MimeDir();
         $parser->setCharset($charset);
-        $result = $parser->parse($data, $options);
 
-        return $result;
+        return $parser->parse($data, $options);
     }
 
     /**
@@ -65,16 +64,15 @@ class Reader
      * input.
      *
      * @param string|resource|array $data
-     * @param int                   $options
      *
-     * @return Document
+     * @throws EofException
+     * @throws ParseException|InvalidDataException
      */
-    public static function readJson($data, $options = 0)
+    public static function readJson($data, int $options = 0): ?Document
     {
         $parser = new Parser\Json();
-        $result = $parser->parse($data, $options);
 
-        return $result;
+        return $parser->parse($data, $options);
     }
 
     /**
@@ -86,15 +84,16 @@ class Reader
      * You can either supply a string, or a readable stream for input.
      *
      * @param string|resource $data
-     * @param int             $options
      *
-     * @return Document
+     * @throws EofException
+     * @throws InvalidDataException
+     * @throws ParseException
+     * @throws LibXMLException
      */
-    public static function readXML($data, $options = 0)
+    public static function readXML($data, int $options = 0): ?Document
     {
         $parser = new Parser\XML();
-        $result = $parser->parse($data, $options);
 
-        return $result;
+        return $parser->parse($data, $options);
     }
 }
