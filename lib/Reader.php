@@ -31,7 +31,7 @@ class Reader
     /**
      * If this option is turned on, it will fix unfolding parse error by adding empty space.
      */
-    const OPTION_FIX_UNFOLDING = 4;
+    public const OPTION_FIX_UNFOLDING = 4;
 
     /**
      * Parses a vCard or iCalendar object, and returns the top component.
