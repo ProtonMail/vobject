@@ -204,4 +204,6 @@ return [
     'America/Godthab' => 'Atlantic/Stanley',
     'CDT' => 'America/Chicago',
     'PST' => 'America/Los_Angeles',
+    'Pacific/Kanton' => 'Pacific/Fakaofo',
+    'UTC+13' => 'Pacific/Fakaofo',
 ];
