@@ -25,7 +25,7 @@ return [
     'GMT0' => 'UTC',
     'Greenwich' => 'UTC',
     'Hongkong' => 'Asia/Hong_Kong',
-    'Iceland' => 'Atlantic/Reykjavik',
+    'Iceland' => 'Africa/Abidjan',
     'Iran' => 'Asia/Tehran',
     'Israel' => 'Asia/Jerusalem',
     'Jamaica' => 'America/Jamaica',

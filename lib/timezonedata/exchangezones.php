@@ -21,20 +21,20 @@ return [
     'Brussels, Copenhagen, Madrid, Paris' => 'Europe/Paris',
     'Paris, Madrid, Brussels, Copenhagen' => 'Europe/Paris',
     'Prague, Central Europe' => 'Europe/Prague',
-    'Sarajevo, Skopje, Sofija, Vilnius, Warsaw, Zagreb' => 'Europe/Sarajevo',
-    'West Central Africa' => 'Africa/Luanda', // This was a best guess
+    'Sarajevo, Skopje, Sofija, Vilnius, Warsaw, Zagreb' => 'Europe/Sofia',
+    'West Central Africa' => 'Africa/Lagos', // This was a best guess
     'Athens, Istanbul, Minsk' => 'Europe/Athens',
     'Bucharest' => 'Europe/Bucharest',
     'Cairo' => 'Africa/Cairo',
-    'Harare, Pretoria' => 'Africa/Harare',
+    'Harare, Pretoria' => 'Africa/Maputo',
     'Helsinki, Riga, Tallinn' => 'Europe/Helsinki',
     'Israel, Jerusalem Standard Time' => 'Asia/Jerusalem',
     'Baghdad' => 'Asia/Baghdad',
-    'Arab, Kuwait, Riyadh' => 'Asia/Kuwait',
+    'Arab, Kuwait, Riyadh' => 'Asia/Riyadh',
     'Moscow, St. Petersburg, Volgograd' => 'Europe/Moscow',
     'East Africa, Nairobi' => 'Africa/Nairobi',
     'Tehran' => 'Asia/Tehran',
-    'Abu Dhabi, Muscat' => 'Asia/Muscat', // Best guess
+    'Abu Dhabi, Muscat' => 'Asia/Dubai', // Best guess
     'Baku, Tbilisi, Yerevan' => 'Asia/Baku',
     'Kabul' => 'Asia/Kabul',
     'Ekaterinburg' => 'Asia/Yekaterinburg',
@@ -71,7 +71,7 @@ return [
     'Mid-Atlantic' => 'America/Noronha',
     'Brasilia' => 'America/Sao_Paulo', // Best guess
     'Buenos Aires' => 'America/Argentina/Buenos_Aires',
-    'Greenland' => 'Atlantic/Stanley',
+    'Greenland' => 'America/Nuuk',
     'Newfoundland' => 'America/St_Johns',
     'Atlantic Time (Canada)' => 'America/Halifax',
     'Caracas, La Paz' => 'America/Caracas',
@@ -89,7 +89,7 @@ return [
     'Pacific Time (US & Canada); Tijuana' => 'America/Los_Angeles', // Best guess
     'Alaska' => 'America/Anchorage',
     'Hawaii' => 'Pacific/Honolulu',
-    'Midway Island, Samoa' => 'Pacific/Midway',
+    'Midway Island, Samoa' => 'Pacific/Pago_Pago',
     'Eniwetok, Kwajalein, Dateline Time' => 'Pacific/Kwajalein',
 
     // Localized timezones

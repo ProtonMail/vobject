@@ -26,29 +26,29 @@ class GuessFromMsTzId implements TimezoneGuesser
         4 => 'Europe/Berlin',
         6 => 'Europe/Prague',
         3 => 'Europe/Paris',
-        69 => 'Africa/Luanda', // This was a best guess
+        69 => 'Africa/Lagos', // This was a best guess
         7 => 'Europe/Athens',
         5 => 'Europe/Bucharest',
         49 => 'Africa/Cairo',
-        50 => 'Africa/Harare',
+        50 => 'Africa/Maputo',
         59 => 'Europe/Helsinki',
         27 => 'Asia/Jerusalem',
         26 => 'Asia/Baghdad',
-        74 => 'Asia/Kuwait',
+        74 => 'Asia/Riyadh',
         51 => 'Europe/Moscow',
         56 => 'Africa/Nairobi',
         25 => 'Asia/Tehran',
-        24 => 'Asia/Muscat', // Best guess
+        24 => 'Asia/Dubai', // Best guess
         54 => 'Asia/Baku',
         48 => 'Asia/Kabul',
         58 => 'Asia/Yekaterinburg',
         47 => 'Asia/Karachi',
-        23 => 'Asia/Calcutta',
+        23 => 'Asia/Kolkata',
         62 => 'Asia/Kathmandu',
         46 => 'Asia/Almaty',
         71 => 'Asia/Dhaka',
         66 => 'Asia/Colombo',
-        61 => 'Asia/Rangoon',
+        61 => 'Asia/Yangon',
         22 => 'Asia/Bangkok',
         64 => 'Asia/Krasnoyarsk',
         45 => 'Asia/Shanghai',
@@ -75,7 +75,7 @@ class GuessFromMsTzId implements TimezoneGuesser
         30 => 'America/Noronha',
         8 => 'America/Sao_Paulo', // Best guess
         32 => 'America/Argentina/Buenos_Aires',
-        60 => 'America/Godthab',
+        60 => 'America/Nuuk',
         28 => 'America/St_Johns',
         9 => 'America/Halifax',
         33 => 'America/Caracas',
@@ -92,7 +92,7 @@ class GuessFromMsTzId implements TimezoneGuesser
         13 => 'America/Los_Angeles', // Best guess
         14 => 'America/Anchorage',
         15 => 'Pacific/Honolulu',
-        16 => 'Pacific/Midway',
+        16 => 'Pacific/Pago_Pago',
         39 => 'Pacific/Kwajalein',
     ];
 
