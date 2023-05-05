@@ -8,7 +8,6 @@ class InvalidValueParamTest extends TestCase
 {
     public function testWorkaround()
     {
-        // See https://github.com/fruux/sabre-vobject/issues/36
         $event = <<<ICS
             BEGIN:VCALENDAR
             VERSION:2.0
@@ -27,6 +26,6 @@ class InvalidValueParamTest extends TestCase
             ICS;
 
         $doc = Reader::read($event);
-        $this->assertEquals('LOCATION:ERROR', $doc->VEVENT->LOCATION->serialize());
+        $this->assertEquals("LOCATION:ERROR\r\n", $doc->VEVENT->LOCATION->serialize());
     }
 }

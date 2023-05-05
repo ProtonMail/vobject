@@ -213,7 +213,9 @@ abstract class Document extends Component
             if (isset($parameters['VALUE'])) {
                 $class = $this->getClassNameForPropertyValue($parameters['VALUE']);
                 if (is_null($class)) {
-                    throw new InvalidDataException('Unsupported VALUE parameter for '.$name.' property. You supplied "'.$parameters['VALUE'].'"');
+                    unset($parameters['VALUE']);
+                    $class = $this->getClassNameForPropertyName($name);
+//                    throw new InvalidDataException('Unsupported VALUE parameter for '.$name.' property. You supplied "'.$parameters['VALUE'].'"');
                 }
             } else {
                 $class = $this->getClassNameForPropertyName($name);
