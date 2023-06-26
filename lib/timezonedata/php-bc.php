@@ -29,6 +29,8 @@ return [
     'America/Rainy_River',
     // Moved to backward in 2022g
     'America/Pangnirtung',
+    // Moved to backward in 2023a
+    'America/Yellowknife',
 
     // Original list
     'Africa/Asmera',
