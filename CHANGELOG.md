@@ -1,6 +1,10 @@
 ChangeLog
 =========
 
+4.25.0 (2023-06-26)
+-------------------
+* #89 Move America/Yellowknife to deprecated
+
 4.24.0 (2023-06-19)
 -------------------
 * #87 Added whitelist for illegal values in parameter
