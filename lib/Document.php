@@ -79,16 +79,6 @@ abstract class Document extends Component
     public static $valueMap = [];
 
     /**
-     * List of RFC violating values that we allow in parameter value.
-     * e.g. LOCATION;VALUE=ERROR:some location
-     *
-     * @var string[]
-     */
-    private array $allowedIllegalValues = [
-        'ERROR',
-    ];
-
-    /**
      * Creates a new document.
      *
      * We're changing the default behavior slightly here. First, we don't want
@@ -221,14 +211,12 @@ abstract class Document extends Component
         if (is_null($class)) {
             // If a VALUE parameter is supplied, we should use that.
             if (isset($parameters['VALUE'])) {
-                $class = $this->getClassNameForPropertyValue($parameters['VALUE']);
-                if (is_null($class)) {
-                    if (in_array(strtoupper($parameters['VALUE']), $this->allowedIllegalValues, true)) {
-                        unset($parameters['VALUE']);
-                        $class = $this->getClassNameForPropertyName($name);
-                    } else {
-                        throw new InvalidDataException('Unsupported VALUE parameter for '.$name.' property. You supplied "'.$parameters['VALUE'].'"');
-                    }
+                if (is_string($parameters['VALUE'])) {
+                    $class = $this->getClassNameForPropertyValue($parameters['VALUE']);
+                }
+                if (is_null($class)) { // VALUE is malformed or illegal, drop it
+                    unset($parameters['VALUE']);
+                    $class = $this->getClassNameForPropertyName($name);
                 }
             } else {
                 $class = $this->getClassNameForPropertyName($name);
