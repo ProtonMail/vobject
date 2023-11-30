@@ -215,12 +215,20 @@ class MimeDir extends Parser
                         && $e instanceof ParseException && str_contains($e->getMessage(), 'Invalid Mimedir file. Line starting at')
                         && ($this->options & Reader::OPTION_FIX_UNFOLDING)
                     ) {
-                        // Fix unfolding
-                        $component->remove($prevNode);
-                        $value = $prevNode->getValue() . ' ' . $line . PHP_EOL;
-                        $prevNode->offsetSet('VALUE', $value);
-                        $prevNode->setValue($value);
-                        $component->add($prevNode);
+                        if (preg_match('/[A-Z]\w+; /', $line)) {
+                            $line = preg_replace('/([A-Z]\w+;) /', '$1', $line);
+                            $result = $this->parseLine($line);
+                            if ($result) {
+                                $prevNode = $component->add($result);
+                            }
+                        } else {
+                            // Fix unfolding
+                            $component->remove($prevNode);
+                            $value = $prevNode->getValue() . ' ' . $line . PHP_EOL;
+                            $prevNode->offsetSet('VALUE', $value);
+                            $prevNode->setValue($value);
+                            $component->add($prevNode);
+                        }
                         continue;
                     }
                     throw $e;
