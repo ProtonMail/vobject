@@ -1,6 +1,10 @@
 ChangeLog
 =========
 
+4.26.0 (2023-11-30)
+-------------------
+* #92 Drop malformed or illegal VALUE parameter
+
 4.25.0 (2023-06-26)
 -------------------
 * #89 Move America/Yellowknife to deprecated
