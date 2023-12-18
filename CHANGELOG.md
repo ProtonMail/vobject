@@ -1,6 +1,10 @@
 ChangeLog
 =========
 
+4.27.0 (2023-12-18)
+-------------------
+* #94 Add support for gulf standard time
+
 4.26.0 (2023-11-30)
 -------------------
 * #92 Drop malformed or illegal VALUE parameter
