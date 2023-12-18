@@ -469,6 +469,11 @@ HI;
             'expected' => 'America/Los_Angeles',
         ];
 
+        yield 'Gulf Standard Time' => [
+            'origin' => 'Gulf Standard Time',
+            'expected' => 'Asia/Muscat',
+        ];
+
         if (($handle = fopen(__DIR__ . "/microsoft-timezones-confluence.csv", "r")) !== FALSE) {
             $data = fgetcsv($handle);
             while (($data = fgetcsv($handle)) !== FALSE) {

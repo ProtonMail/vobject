@@ -204,4 +204,5 @@ return [
     'America/Godthab' => 'Atlantic/Stanley',
     'CDT' => 'America/Chicago',
     'PST' => 'America/Los_Angeles',
+    'Gulf Standard Time' => 'Asia/Muscat',
 ];
