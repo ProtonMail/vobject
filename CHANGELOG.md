@@ -1,6 +1,10 @@
 ChangeLog
 =========
 
+4.28.0 (2023-12-19)
+-------------------
+* #96 use dubai instead of muscat
+
 4.27.0 (2023-12-18)
 -------------------
 * #94 Add support for gulf standard time
