@@ -471,7 +471,7 @@ HI;
 
         yield 'Gulf Standard Time' => [
             'origin' => 'Gulf Standard Time',
-            'expected' => 'Asia/Muscat',
+            'expected' => 'Asia/Dubai',
         ];
 
         if (($handle = fopen(__DIR__ . "/microsoft-timezones-confluence.csv", "r")) !== FALSE) {
