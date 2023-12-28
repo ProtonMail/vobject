@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Sabre\VObject\TimezoneGuesser;
 
-use DateTimeZone;
 use Sabre\VObject\TimeZoneUtil;
 
 /**
@@ -14,21 +13,21 @@ use Sabre\VObject\TimeZoneUtil;
  */
 class FindFromMzVersionTimezone implements TimezoneFinder
 {
-    public function find(string $tzid, bool $failIfUncertain = false): ?DateTimeZone
+    public function find(string $tzid, ?bool $failIfUncertain = false): ?\DateTimeZone
     {
         if (strlen($tzid) < 1) {
             return null;
         }
 
-        $trailingChar = (int) $tzid[strlen($tzid)-1];
+        $trailingChar = (int) $tzid[strlen($tzid) - 1];
         if ($trailingChar <= 9 && $trailingChar >= 1) {
             $emptySpace = strrpos($tzid, ' ');
-            if ($emptySpace === false) {
+            if (false === $emptySpace) {
                 return null;
             }
 
             $tz = TimeZoneUtil::getTimeZone(substr($tzid, 0, $emptySpace));
-            if ($tz->getName() === 'UTC') {
+            if ('UTC' === $tz->getName()) {
                 return null;
             }
 

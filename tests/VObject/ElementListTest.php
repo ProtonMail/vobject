@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 class ElementListTest extends TestCase
 {
-    public function testIterate()
+    public function testIterate(): void
     {
         $cal = new Component\VCalendar();
         $sub = $cal->createComponent('VEVENT');
@@ -22,12 +22,12 @@ class ElementListTest extends TestCase
         $count = 0;
         foreach ($elemList as $key => $subcomponent) {
             ++$count;
-            $this->assertInstanceOf(Component::class, $subcomponent);
+            self::assertInstanceOf(Component::class, $subcomponent);
 
             if (3 === $count) {
-                $this->assertEquals(2, $key);
+                self::assertEquals(2, $key);
             }
         }
-        $this->assertEquals(3, $count);
+        self::assertEquals(3, $count);
     }
 }

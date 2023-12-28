@@ -8,7 +8,7 @@ use Sabre\VObject\ParseException;
 
 class JsonTest extends TestCase
 {
-    public function testRoundTripJCard()
+    public function testRoundTripJCard(): void
     {
         $input = [
             'vcard',
@@ -189,15 +189,15 @@ TZ;VALUE=UTC-OFFSET:-0500
 END:VCARD
 
 VCF;
-        $this->assertEquals($expected, str_replace("\r", '', $result));
+        self::assertEquals($expected, str_replace("\r", '', $result));
 
-        $this->assertEquals(
+        self::assertEquals(
             $input,
             $vobj->jsonSerialize()
         );
     }
 
-    public function testRoundTripJCal()
+    public function testRoundTripJCal(): void
     {
         $input = [
             'vcalendar',
@@ -345,15 +345,15 @@ END:VEVENT
 END:VCALENDAR
 
 VCF;
-        $this->assertEquals($expected, str_replace("\r", '', $result));
+        self::assertEquals($expected, str_replace("\r", '', $result));
 
-        $this->assertEquals(
+        self::assertEquals(
             $input,
             $vobj->jsonSerialize()
         );
     }
 
-    public function testParseStreamArg()
+    public function testParseStreamArg(): void
     {
         $input = [
             'vcard',
@@ -369,10 +369,10 @@ VCF;
         rewind($stream);
 
         $result = VObject\Reader::readJson($stream, 0);
-        $this->assertEquals('foo', $result->FN->getValue());
+        self::assertEquals('foo', $result->FN->getValue());
     }
 
-    public function testParseInvalidData()
+    public function testParseInvalidData(): void
     {
         $this->expectException(ParseException::class);
         $json = new Json();

@@ -11,15 +11,15 @@ class DateAndOrTimeTest extends TestCase
     /**
      * @dataProvider dates
      */
-    public function testGetJsonValue($input, $output)
+    public function testGetJsonValue(string $input, string $output): void
     {
         $vcard = new VObject\Component\VCard();
         $prop = $vcard->createProperty('BDAY', $input);
 
-        $this->assertEquals([$output], $prop->getJsonValue());
+        self::assertEquals([$output], $prop->getJsonValue());
     }
 
-    public function dates()
+    public function dates(): array
     {
         return [
             [
@@ -81,7 +81,7 @@ class DateAndOrTimeTest extends TestCase
         ];
     }
 
-    public function testSetParts()
+    public function testSetParts(): void
     {
         $vcard = new VObject\Component\VCard();
 
@@ -90,10 +90,10 @@ class DateAndOrTimeTest extends TestCase
             new \DateTime('2014-04-02 18:37:00'),
         ]);
 
-        $this->assertEquals('20140402T183700Z', $prop->getValue());
+        self::assertEquals('20140402T183700Z', $prop->getValue());
     }
 
-    public function testSetPartsDateTimeImmutable()
+    public function testSetPartsDateTimeImmutable(): void
     {
         $vcard = new VObject\Component\VCard();
 
@@ -102,10 +102,10 @@ class DateAndOrTimeTest extends TestCase
             new \DateTimeImmutable('2014-04-02 18:37:00'),
         ]);
 
-        $this->assertEquals('20140402T183700Z', $prop->getValue());
+        self::assertEquals('20140402T183700Z', $prop->getValue());
     }
 
-    public function testSetPartsTooMany()
+    public function testSetPartsTooMany(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $vcard = new VObject\Component\VCard();
@@ -117,7 +117,7 @@ class DateAndOrTimeTest extends TestCase
         ]);
     }
 
-    public function testSetPartsString()
+    public function testSetPartsString(): void
     {
         $vcard = new VObject\Component\VCard();
 
@@ -126,10 +126,10 @@ class DateAndOrTimeTest extends TestCase
             '20140402T183700Z',
         ]);
 
-        $this->assertEquals('20140402T183700Z', $prop->getValue());
+        self::assertEquals('20140402T183700Z', $prop->getValue());
     }
 
-    public function testSetValueDateTime()
+    public function testSetValueDateTime(): void
     {
         $vcard = new VObject\Component\VCard();
 
@@ -138,10 +138,10 @@ class DateAndOrTimeTest extends TestCase
             new \DateTime('2014-04-02 18:37:00')
         );
 
-        $this->assertEquals('20140402T183700Z', $prop->getValue());
+        self::assertEquals('20140402T183700Z', $prop->getValue());
     }
 
-    public function testSetValueDateTimeImmutable()
+    public function testSetValueDateTimeImmutable(): void
     {
         $vcard = new VObject\Component\VCard();
 
@@ -150,10 +150,10 @@ class DateAndOrTimeTest extends TestCase
             new \DateTimeImmutable('2014-04-02 18:37:00')
         );
 
-        $this->assertEquals('20140402T183700Z', $prop->getValue());
+        self::assertEquals('20140402T183700Z', $prop->getValue());
     }
 
-    public function testSetDateTimeOffset()
+    public function testSetDateTimeOffset(): void
     {
         $vcard = new VObject\Component\VCard();
 
@@ -162,10 +162,10 @@ class DateAndOrTimeTest extends TestCase
             new \DateTime('2014-04-02 18:37:00', new \DateTimeZone('America/Toronto'))
         );
 
-        $this->assertEquals('20140402T183700-0400', $prop->getValue());
+        self::assertEquals('20140402T183700-0400', $prop->getValue());
     }
 
-    public function testGetDateTime()
+    public function testGetDateTime(): void
     {
         $datetime = new \DateTime('2014-04-02 18:37:00', new \DateTimeZone('America/Toronto'));
 
@@ -173,21 +173,21 @@ class DateAndOrTimeTest extends TestCase
         $prop = $vcard->createProperty('BDAY', $datetime);
 
         $dt = $prop->getDateTime();
-        $this->assertEquals('2014-04-02T18:37:00-04:00', $dt->format('c'), 'For some reason this one failed. Current default timezone is: '.date_default_timezone_get());
+        self::assertEquals('2014-04-02T18:37:00-04:00', $dt->format('c'), 'For some reason this one failed. Current default timezone is: '.date_default_timezone_get());
     }
 
-    public function testGetDate()
+    public function testGetDate(): void
     {
         $datetime = new \DateTime('2014-04-02');
 
         $vcard = new VObject\Component\VCard();
         $prop = $vcard->createProperty('BDAY', $datetime, null, 'DATE');
 
-        $this->assertEquals('DATE', $prop->getValueType());
-        $this->assertEquals('BDAY:20140402', rtrim($prop->serialize()));
+        self::assertEquals('DATE', $prop->getValueType());
+        self::assertEquals('BDAY:20140402', rtrim($prop->serialize()));
     }
 
-    public function testGetDateIncomplete()
+    public function testGetDateIncomplete(): void
     {
         $datetime = '--0407';
 
@@ -202,10 +202,10 @@ class DateAndOrTimeTest extends TestCase
         $current = new \DateTime('now');
         $year = $current->format('Y');
 
-        $this->assertEquals($year.'0407', $dt->format('Ymd'));
+        self::assertEquals($year.'0407', $dt->format('Ymd'));
     }
 
-    public function testGetDateIncompleteFromVCard()
+    public function testGetDateIncompleteFromVCard(): void
     {
         $vcard = <<<VCF
 BEGIN:VCARD
@@ -224,27 +224,27 @@ VCF;
         $current = new \DateTime('now');
         $year = $current->format('Y');
 
-        $this->assertEquals($year.'0407', $dt->format('Ymd'));
+        self::assertEquals($year.'0407', $dt->format('Ymd'));
     }
 
-    public function testValidate()
+    public function testValidate(): void
     {
         $datetime = '--0407';
 
         $vcard = new VObject\Component\VCard();
         $prop = $vcard->add('BDAY', $datetime);
 
-        $this->assertEquals([], $prop->validate());
+        self::assertEquals([], $prop->validate());
     }
 
-    public function testValidateBroken()
+    public function testValidateBroken(): void
     {
         $datetime = '123';
 
         $vcard = new VObject\Component\VCard();
         $prop = $vcard->add('BDAY', $datetime);
 
-        $this->assertEquals([[
+        self::assertEquals([[
             'level' => 3,
             'message' => 'The supplied value (123) is not a correct DATE-AND-OR-TIME property',
             'node' => $prop,

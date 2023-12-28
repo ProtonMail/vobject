@@ -10,7 +10,7 @@ use Sabre\VObject\Recur\NoInstancesException;
 
 class NoInstancesTest extends TestCase
 {
-    public function testRecurrence()
+    public function testRecurrence(): void
     {
         $this->expectException(NoInstancesException::class);
         $input = <<<ICS
@@ -32,8 +32,8 @@ END:VCALENDAR
 ICS;
 
         $vcal = Reader::read($input);
-        $this->assertInstanceOf(VCalendar::class, $vcal);
+        self::assertInstanceOf(VCalendar::class, $vcal);
 
-        $it = new EventIterator($vcal, 'foo');
+        new EventIterator($vcal, 'foo');
     }
 }

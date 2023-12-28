@@ -4,21 +4,19 @@ declare(strict_types=1);
 
 namespace Sabre\VObject\TimezoneGuesser;
 
-use DateTimeZone;
-use DateTimeImmutable;
 use Sabre\VObject\Component\VTimeZone;
 use Sabre\VObject\Recur\RRuleIterator;
 use Sabre\VObject\TimeZoneUtil;
 
 class GuessFromCustomizedTimeZone implements TimezoneGuesser
 {
-    public function guess(VTimeZone $vtimezone, bool $failIfUncertain = false): ?DateTimeZone
+    public function guess(VTimeZone $vtimezone, ?bool $failIfUncertain = false): ?\DateTimeZone
     {
-        if (null === $vtimezone->TZID || $vtimezone->TZID->getValue() !== 'Customized Time Zone') {
+        if (null === $vtimezone->TZID || 'Customized Time Zone' !== $vtimezone->TZID->getValue()) {
             return null;
         }
 
-        $timezones = DateTimeZone::listIdentifiers();
+        $timezones = \DateTimeZone::listIdentifiers();
         $standard = $vtimezone->STANDARD;
         $daylight = $vtimezone->DAYLIGHT;
         if (!$standard) {
@@ -34,8 +32,8 @@ class GuessFromCustomizedTimeZone implements TimezoneGuesser
         $standardRRule = $standard->RRULE ? $standard->RRULE->getValue() : 'FREQ=DAILY';
         // The guess will not be perfectly matched since we use the timezone data of the current year
         // It might be wrong if the timezone data changed in the past
-        $year = (new DateTimeImmutable('now'))->format('Y');
-        $start = new DateTimeImmutable($year . '-01-01');
+        $year = (new \DateTimeImmutable('now'))->format('Y');
+        $start = new \DateTimeImmutable($year.'-01-01');
         $standardIterator = new RRuleIterator($standardRRule, $start);
         $standardIterator->next();
 
@@ -48,7 +46,7 @@ class GuessFromCustomizedTimeZone implements TimezoneGuesser
         $daylightIterator && $daylightIterator->next();
 
         foreach ($timezones as $timezone) {
-            $tz = new DateTimeZone($timezone);
+            $tz = new \DateTimeZone($timezone);
             // check standard
             $timestamp = $standardIterator->current()->getTimestamp();
             $transitions = $tz->getTransitions($timestamp, $timestamp + 1);
@@ -88,8 +86,8 @@ class GuessFromCustomizedTimeZone implements TimezoneGuesser
 
         $time = $time * 60;
 
-        if ($offset[0] === "-") {
-            $time = $time *-1;
+        if ('-' === $offset[0]) {
+            $time = $time * -1;
         }
 
         return $time;

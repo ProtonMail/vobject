@@ -3,12 +3,16 @@
 namespace Sabre\VObject;
 
 use PHPUnit\Framework\TestCase;
+use Sabre\VObject\Component\VCard;
 
 class VCardConverterTest extends TestCase
 {
-    use \Sabre\VObject\PHPUnitAssertions;
+    use PHPUnitAssertions;
 
-    public function testConvert30to40()
+    /**
+     * @throws InvalidDataException
+     */
+    public function testConvert30to40(): void
     {
         $input = <<<IN
 BEGIN:VCARD
@@ -41,16 +45,20 @@ KIND:ORG
 END:VCARD
 OUT;
 
+        /** @var VCard $vcard */
         $vcard = Reader::read($input);
         $vcard = $vcard->convert(Document::VCARD40);
 
-        $this->assertVObjectEqualsVObject(
+        self::assertVObjectEqualsVObject(
             $output,
             $vcard
         );
     }
 
-    public function testConvert40to40()
+    /**
+     * @throws InvalidDataException
+     */
+    public function testConvert40to40(): void
     {
         $input = <<<IN
 BEGIN:VCARD
@@ -78,16 +86,20 @@ END:VCARD
 
 OUT;
 
+        /** @var VCard $vcard */
         $vcard = Reader::read($input);
         $vcard = $vcard->convert(Document::VCARD40);
 
-        $this->assertVObjectEqualsVObject(
+        self::assertVObjectEqualsVObject(
             $output,
             $vcard
         );
     }
 
-    public function testConvert21to40()
+    /**
+     * @throws InvalidDataException
+     */
+    public function testConvert21to40(): void
     {
         $input = <<<IN
 BEGIN:VCARD
@@ -116,16 +128,20 @@ END:VCARD
 
 OUT;
 
+        /** @var VCard $vcard */
         $vcard = Reader::read($input);
         $vcard = $vcard->convert(Document::VCARD40);
 
-        $this->assertVObjectEqualsVObject(
+        self::assertVObjectEqualsVObject(
             $output,
             $vcard
         );
     }
 
-    public function testConvert30to30()
+    /**
+     * @throws InvalidDataException
+     */
+    public function testConvert30to30(): void
     {
         $input = <<<IN
 BEGIN:VCARD
@@ -155,16 +171,20 @@ END:VCARD
 
 OUT;
 
+        /** @var VCard $vcard */
         $vcard = Reader::read($input);
         $vcard = $vcard->convert(Document::VCARD30);
 
-        $this->assertVObjectEqualsVObject(
+        self::assertVObjectEqualsVObject(
             $output,
             $vcard
         );
     }
 
-    public function testConvert40to30()
+    /**
+     * @throws InvalidDataException
+     */
+    public function testConvert40to30(): void
     {
         $input = <<<IN
 BEGIN:VCARD
@@ -195,22 +215,28 @@ END:VCARD
 
 OUT;
 
+        /** @var VCard $vcard */
         $vcard = Reader::read($input);
         $vcard = $vcard->convert(Document::VCARD30);
 
-        $this->assertVObjectEqualsVObject(
+        self::assertVObjectEqualsVObject(
             $output,
             $vcard
         );
     }
 
-    public function testConvertGroupCard()
+    /**
+     * @throws InvalidDataException
+     */
+    public function testConvertGroupCard(): void
     {
         $input = <<<IN
 BEGIN:VCARD
 VERSION:3.0
 PRODID:foo
 X-ADDRESSBOOKSERVER-KIND:GROUP
+X-ADDRESSBOOKSERVER-MEMBER:mailto:someone@example.com
+X-ADDRESSBOOKSERVER-MEMBER:mailto:sometwo@example.com
 END:VCARD
 
 IN;
@@ -219,14 +245,17 @@ IN;
 BEGIN:VCARD
 VERSION:4.0
 KIND:GROUP
+MEMBER:mailto:someone@example.com
+MEMBER:mailto:sometwo@example.com
 END:VCARD
 
 OUT;
 
+        /** @var VCard $vcard */
         $vcard = Reader::read($input);
         $vcard = $vcard->convert(Document::VCARD40);
 
-        $this->assertVObjectEqualsVObject(
+        self::assertVObjectEqualsVObject(
             $output,
             $vcard
         );
@@ -236,20 +265,26 @@ OUT;
 BEGIN:VCARD
 VERSION:3.0
 X-ADDRESSBOOKSERVER-KIND:GROUP
+X-ADDRESSBOOKSERVER-MEMBER:mailto:someone@example.com
+X-ADDRESSBOOKSERVER-MEMBER:mailto:sometwo@example.com
 END:VCARD
 
 OUT;
 
+        /** @var VCard $vcard */
         $vcard = Reader::read($input);
         $vcard = $vcard->convert(Document::VCARD30);
 
-        $this->assertVObjectEqualsVObject(
+        self::assertVObjectEqualsVObject(
             $output,
             $vcard
         );
     }
 
-    public function testBDAYConversion()
+    /**
+     * @throws InvalidDataException
+     */
+    public function testBDAYConversion(): void
     {
         $input = <<<IN
 BEGIN:VCARD
@@ -268,10 +303,11 @@ END:VCARD
 
 OUT;
 
+        /** @var VCard $vcard */
         $vcard = Reader::read($input);
         $vcard = $vcard->convert(Document::VCARD40);
 
-        $this->assertVObjectEqualsVObject(
+        self::assertVObjectEqualsVObject(
             $output,
             $vcard
         );
@@ -285,16 +321,20 @@ END:VCARD
 
 OUT;
 
+        /** @var VCard $vcard */
         $vcard = Reader::read($input);
         $vcard = $vcard->convert(Document::VCARD30);
 
-        $this->assertVObjectEqualsVObject(
+        self::assertVObjectEqualsVObject(
             $output,
             $vcard
         );
     }
 
-    public function testUnknownSourceVCardVersion()
+    /**
+     * @throws InvalidDataException
+     */
+    public function testUnknownSourceVCardVersion(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $input = <<<IN
@@ -314,11 +354,15 @@ END:VCARD
 
 IN;
 
+        /** @var VCard $vcard */
         $vcard = Reader::read($input);
         $vcard->convert(Document::VCARD40);
     }
 
-    public function testUnknownTargetVCardVersion()
+    /**
+     * @throws InvalidDataException
+     */
+    public function testUnknownTargetVCardVersion(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $input = <<<IN
@@ -329,11 +373,15 @@ END:VCARD
 
 IN;
 
+        /** @var VCard $vcard */
         $vcard = Reader::read($input);
         $vcard->convert(Document::VCARD21);
     }
 
-    public function testConvertIndividualCard()
+    /**
+     * @throws InvalidDataException
+     */
+    public function testConvertIndividualCard(): void
     {
         $input = <<<IN
 BEGIN:VCARD
@@ -351,10 +399,11 @@ END:VCARD
 
 OUT;
 
+        /** @var VCard $vcard */
         $vcard = Reader::read($input);
         $vcard = $vcard->convert(Document::VCARD30);
 
-        $this->assertVObjectEqualsVObject(
+        self::assertVObjectEqualsVObject(
             $output,
             $vcard
         );
@@ -367,16 +416,20 @@ END:VCARD
 
 OUT;
 
+        /** @var VCard $vcard */
         $vcard = Reader::read($input);
         $vcard = $vcard->convert(Document::VCARD40);
 
-        $this->assertVObjectEqualsVObject(
+        self::assertVObjectEqualsVObject(
             $output,
             $vcard
         );
     }
 
-    public function testAnniversary()
+    /**
+     * @throws InvalidDataException
+     */
+    public function testAnniversary(): void
     {
         $input = <<<IN
 BEGIN:VCARD
@@ -396,10 +449,11 @@ END:VCARD
 
 OUT;
 
+        /** @var VCard $vcard */
         $vcard = Reader::read($input);
         $vcard = $vcard->convert(Document::VCARD30);
 
-        $this->assertVObjectEqualsVObject(
+        self::assertVObjectEqualsVObject(
             $output,
             $vcard
         );
@@ -413,16 +467,20 @@ OUT;
             $input,
         ];
 
+        /** @var VCard $vcard */
         $vcard = Reader::read($input);
         $vcard = $vcard->convert(Document::VCARD40);
 
-        $this->assertVObjectEqualsVObject(
+        self::assertVObjectEqualsVObject(
             $output,
             $vcard
         );
     }
 
-    public function testMultipleAnniversaries()
+    /**
+     * @throws InvalidDataException
+     */
+    public function testMultipleAnniversaries(): void
     {
         $input = <<<IN
 BEGIN:VCARD
@@ -450,10 +508,11 @@ END:VCARD
 
 OUT;
 
+        /** @var VCard $vcard */
         $vcard = Reader::read($input);
         $vcard = $vcard->convert(Document::VCARD30);
 
-        $this->assertVObjectEqualsVObject(
+        self::assertVObjectEqualsVObject(
             $output,
             $vcard
         );
@@ -467,16 +526,20 @@ OUT;
             $input,
         ];
 
+        /** @var VCard $vcard */
         $vcard = Reader::read($input);
         $vcard = $vcard->convert(Document::VCARD40);
 
-        $this->assertVObjectEqualsVObject(
+        self::assertVObjectEqualsVObject(
             $output,
             $vcard
         );
     }
 
-    public function testNoLabel()
+    /**
+     * @throws InvalidDataException
+     */
+    public function testNoLabel(): void
     {
         $input = <<<VCF
 BEGIN:VCARD
@@ -491,10 +554,12 @@ VCF;
 
         $vcard = Reader::read($input);
 
-        $this->assertInstanceOf(Component\VCard::class, $vcard);
+        self::assertInstanceOf(Component\VCard::class, $vcard);
+        /** @var VCard $vcard */
         $vcard = $vcard->convert(Document::VCARD40);
         $vcard = $vcard->serialize();
 
+        /** @var VCard $converted */
         $converted = Reader::read($vcard);
         $converted->validate();
 
@@ -512,10 +577,13 @@ END:VCARD
 
 VCF;
 
-        $this->assertEquals($expected, str_replace("\r", '', $vcard));
+        self::assertEquals($expected, str_replace("\r", '', $vcard));
     }
 
-    public function testPhoneNumberValueTypeGetsRemoved()
+    /**
+     * @throws InvalidDataException
+     */
+    public function testPhoneNumberValueTypeGetsRemoved(): void
     {
         $input = <<<VCF
 BEGIN:VCARD
@@ -536,6 +604,7 @@ TEL;TYPE=HOME:+1234
 END:VCARD
 VCF;
 
+        /** @var VCard $vcard */
         $vcard = Reader::read($input);
         $vcard = $vcard->convert(Document::VCARD40);
 

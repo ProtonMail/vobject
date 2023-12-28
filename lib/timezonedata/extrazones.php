@@ -2,7 +2,7 @@
 
 /**
  * The following list are extra timezones partially extracted from
- * https://unicode-org.github.io/cldr-staging/charts/37/supplemental/zone_tzid.html
+ * https://unicode-org.github.io/cldr-staging/charts/37/supplemental/zone_tzid.html.
  */
 return [
     'Acre' => 'America/Rio_Branco',

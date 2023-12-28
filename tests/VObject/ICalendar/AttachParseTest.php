@@ -11,7 +11,7 @@ class AttachParseTest extends TestCase
     /**
      * See issue #128 for more info.
      */
-    public function testParseAttach()
+    public function testParseAttach(): void
     {
         $vcal = <<<ICS
 BEGIN:VCALENDAR
@@ -24,7 +24,7 @@ ICS;
         $vcal = Reader::read($vcal);
         $prop = $vcal->VEVENT->ATTACH;
 
-        $this->assertInstanceOf(Uri::class, $prop);
-        $this->assertEquals('ftp://example.com/pub/reports/r-960812.ps', $prop->getValue());
+        self::assertInstanceOf(Uri::class, $prop);
+        self::assertEquals('ftp://example.com/pub/reports/r-960812.ps', $prop->getValue());
     }
 }

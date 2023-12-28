@@ -2,19 +2,16 @@
 
 namespace Sabre\VObject\Recur\EventIterator;
 
-use DateTime;
-use DateTimeImmutable;
-use DateTimeZone;
 use PHPUnit\Framework\TestCase;
 use Sabre\VObject\Component\VCalendar;
 use Sabre\VObject\Reader;
 
 /**
- * This is a unittest for Issue #53.
+ * This is a unit test for Issue #53.
  */
 class HandleRDateExpandTest extends TestCase
 {
-    public function testExpand()
+    public function testExpand(): void
     {
         $input = <<<ICS
 BEGIN:VCALENDAR
@@ -37,24 +34,24 @@ END:VCALENDAR
 ICS;
 
         $vcal = Reader::read($input);
-        $this->assertInstanceOf(VCalendar::class, $vcal);
+        self::assertInstanceOf(VCalendar::class, $vcal);
 
-        $vcal = $vcal->expand(new DateTime('2015-01-01'), new DateTime('2015-12-01'));
+        $vcal = $vcal->expand(new \DateTime('2015-01-01'), new \DateTime('2015-12-01'));
 
         $result = iterator_to_array($vcal->VEVENT);
 
-        $this->assertEquals(5, count($result));
+        self::assertCount(5, $result);
 
-        $utc = new DateTimeZone('UTC');
+        $utc = new \DateTimeZone('UTC');
         $expected = [
-            new DateTimeImmutable('2015-10-12', $utc),
-            new DateTimeImmutable('2015-10-15', $utc),
-            new DateTimeImmutable('2015-10-17', $utc),
-            new DateTimeImmutable('2015-10-18', $utc),
-            new DateTimeImmutable('2015-10-20', $utc),
+            new \DateTimeImmutable('2015-10-12', $utc),
+            new \DateTimeImmutable('2015-10-15', $utc),
+            new \DateTimeImmutable('2015-10-17', $utc),
+            new \DateTimeImmutable('2015-10-18', $utc),
+            new \DateTimeImmutable('2015-10-20', $utc),
         ];
 
         $result = array_map(function ($ev) {return $ev->DTSTART->getDateTime(); }, $result);
-        $this->assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 }

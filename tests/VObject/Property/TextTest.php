@@ -7,7 +7,7 @@ use Sabre\VObject\Component\VCard;
 
 class TextTest extends TestCase
 {
-    public function assertVCard21Serialization($propValue, $expected)
+    public function assertVCard21Serialization($propValue, string $expected): void
     {
         $doc = new VCard([
             'VERSION' => '2.1',
@@ -21,50 +21,50 @@ class TextTest extends TestCase
 
         $output = $doc->serialize();
 
-        $this->assertEquals("BEGIN:VCARD\r\nVERSION:2.1\r\n$expected\r\nEND:VCARD\r\n", $output);
+        self::assertEquals("BEGIN:VCARD\r\nVERSION:2.1\r\n$expected\r\nEND:VCARD\r\n", $output);
     }
 
-    public function testSerializeVCard21()
+    public function testSerializeVCard21(): void
     {
-        $this->assertVCard21Serialization(
+        self::assertVCard21Serialization(
             'f;oo',
             'PROP;P1=V1:f;oo'
         );
     }
 
-    public function testSerializeVCard21Array()
+    public function testSerializeVCard21Array(): void
     {
-        $this->assertVCard21Serialization(
+        self::assertVCard21Serialization(
             ['f;oo', 'bar'],
             'PROP;P1=V1:f\;oo;bar'
         );
     }
 
-    public function testSerializeVCard21Fold()
+    public function testSerializeVCard21Fold(): void
     {
-        $this->assertVCard21Serialization(
+        self::assertVCard21Serialization(
             str_repeat('x', 80),
             'PROP;P1=V1:'.str_repeat('x', 64)."\r\n ".str_repeat('x', 16)
         );
     }
 
-    public function testSerializeQuotedPrintable()
+    public function testSerializeQuotedPrintable(): void
     {
-        $this->assertVCard21Serialization(
+        self::assertVCard21Serialization(
             "foo\r\nbar",
             'PROP;P1=V1;ENCODING=QUOTED-PRINTABLE:foo=0D=0Abar'
         );
     }
 
-    public function testSerializeQuotedPrintableFold()
+    public function testSerializeQuotedPrintableFold(): void
     {
-        $this->assertVCard21Serialization(
+        self::assertVCard21Serialization(
             "foo\r\nbarxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
             "PROP;P1=V1;ENCODING=QUOTED-PRINTABLE:foo=0D=0Abarxxxxxxxxxxxxxxxxxxxxxxxxxx=\r\n xxx"
         );
     }
 
-    public function testValidateMinimumPropValue()
+    public function testValidateMinimumPropValue(): void
     {
         $vcard = <<<IN
 BEGIN:VCARD
@@ -76,12 +76,12 @@ END:VCARD
 IN;
 
         $vcard = \Sabre\VObject\Reader::read($vcard);
-        $this->assertEquals(1, count($vcard->validate()));
+        self::assertCount(1, $vcard->validate());
 
-        $this->assertEquals(1, count($vcard->N->getParts()));
+        self::assertCount(1, $vcard->N->getParts());
 
         $vcard->validate(\Sabre\VObject\Node::REPAIR);
 
-        $this->assertEquals(5, count($vcard->N->getParts()));
+        self::assertCount(5, $vcard->N->getParts());
     }
 }

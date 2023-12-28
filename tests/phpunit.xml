@@ -6,16 +6,21 @@
   convertWarningsToExceptions="true"
   beStrictAboutTestsThatDoNotTestAnything="true"
   beStrictAboutOutputDuringTests="true"
+  failOnRisky="true"
+  failOnWarning="true"
+  enforceTimeLimit="true"
   >
+  <php>
+    <ini name="error_reporting" value="E_ALL"/>
+  </php>
+  <coverage includeUncoveredFiles="true">
+    <include>
+      <directory suffix=".php">../lib/</directory>
+    </include>
+  </coverage>
   <testsuites>
     <testsuite name="Sabre\VObject">
       <directory>.</directory>
     </testsuite>
   </testsuites>
-
-  <filter>
-    <whitelist addUncoveredFilesFromWhitelist="true">
-        <directory suffix=".php">../lib/</directory>
-   </whitelist>
-  </filter>
 </phpunit>

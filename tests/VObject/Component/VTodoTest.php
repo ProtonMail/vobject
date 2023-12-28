@@ -10,12 +10,12 @@ class VTodoTest extends TestCase
     /**
      * @dataProvider timeRangeTestData
      */
-    public function testInTimeRange(VTodo $vtodo, $start, $end, $outcome)
+    public function testInTimeRange(VTodo $vtodo, \DateTime $start, \DateTime $end, bool $outcome): void
     {
-        $this->assertEquals($outcome, $vtodo->isInTimeRange($start, $end));
+        self::assertEquals($outcome, $vtodo->isInTimeRange($start, $end));
     }
 
-    public function timeRangeTestData()
+    public function timeRangeTestData(): array
     {
         $tests = [];
 
@@ -64,7 +64,7 @@ class VTodoTest extends TestCase
         return $tests;
     }
 
-    public function testValidate()
+    public function testValidate(): void
     {
         $input = <<<HI
 BEGIN:VCALENDAR
@@ -85,10 +85,10 @@ HI;
             $messages[] = $warning['message'];
         }
 
-        $this->assertEquals([], $messages);
+        self::assertEquals([], $messages);
     }
 
-    public function testValidateInvalid()
+    public function testValidateInvalid(): void
     {
         $input = <<<HI
 BEGIN:VCALENDAR
@@ -107,13 +107,13 @@ HI;
             $messages[] = $warning['message'];
         }
 
-        $this->assertEquals([
+        self::assertEquals([
             'UID MUST appear exactly once in a VTODO component',
             'DTSTAMP MUST appear exactly once in a VTODO component',
         ], $messages);
     }
 
-    public function testValidateDUEDTSTARTMisMatch()
+    public function testValidateDueDateTimeStartMisMatch(): void
     {
         $input = <<<HI
 BEGIN:VCALENDAR
@@ -136,12 +136,12 @@ HI;
             $messages[] = $warning['message'];
         }
 
-        $this->assertEquals([
+        self::assertEquals([
             'The value type (DATE or DATE-TIME) must be identical for DUE and DTSTART',
         ], $messages);
     }
 
-    public function testValidateDUEbeforeDTSTART()
+    public function testValidateDueBeforeDateTimeStart(): void
     {
         $input = <<<HI
 BEGIN:VCALENDAR
@@ -164,7 +164,7 @@ HI;
             $messages[] = $warning['message'];
         }
 
-        $this->assertEquals([
+        self::assertEquals([
             'DUE must occur after DTSTART',
         ], $messages);
     }
