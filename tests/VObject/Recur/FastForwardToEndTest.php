@@ -2,15 +2,13 @@
 
 namespace Sabre\VObject\Recur;
 
-use DateTime;
-use DateTimeZone;
 use PHPUnit\Framework\TestCase;
 
 class FastForwardToEndTest extends TestCase
 {
-    const FF_TIMEOUT = 1000000; // in usec
+    public const FF_TIMEOUT = 1000000; // in usec
 
-    private function fastForwardToEnd(RRuleIterator $ruleIterator, $enfoceTiming = true)
+    private function fastForwardToEnd(RRuleIterator $ruleIterator, $enfoceTiming = true): void
     {
         $ru = getrusage();
         $startTime = $ru['ru_utime.tv_sec'] * 1000000 + $ru['ru_utime.tv_usec'];
@@ -22,47 +20,47 @@ class FastForwardToEndTest extends TestCase
         $this->assertNotNull($ruleIterator->current());
     }
 
-    public function testFastForwardToEndWithoutEndYearlyBasic()
+    public function testFastForwardToEndWithoutEndYearlyBasic(): void
     {
-        $startDate = new DateTime('1970-10-23 00:00:00', new DateTimeZone('zulu'));
+        $startDate = new \DateTime('1970-10-23 00:00:00', new \DateTimeZone('zulu'));
         $rrule = new RRuleIterator('FREQ=YEARLY', $startDate);
 
         $this->expectException(\LogicException::class);
         $rrule->fastForwardToEnd();
     }
 
-    public function testFastForwardToEndCountYearlyBasic()
+    public function testFastForwardToEndCountYearlyBasic(): void
     {
-        $startDate = new DateTime('1970-10-23 00:00:00', new DateTimeZone('zulu'));
+        $startDate = new \DateTime('1970-10-23 00:00:00', new \DateTimeZone('zulu'));
         $rrule = new RRuleIterator('FREQ=YEARLY;COUNT=7777', $startDate);
 
         // We do not enforce the timing in case of a count rule as we cannot optimize it
         $this->fastForwardToEnd($rrule, false);
 
-        $expected = (new DateTime())
-            ->setTimezone(new DateTimeZone('zulu'))
+        $expected = (new \DateTime())
+            ->setTimezone(new \DateTimeZone('zulu'))
             ->setDate(9746, 10, 23)
             ->setTime(0, 0, 0)
             ->getTimestamp();
         $this->assertEquals($expected, $rrule->current()->getTimestamp());
     }
 
-    public function testFastForwardToEndUntilYearlyBasic()
+    public function testFastForwardToEndUntilYearlyBasic(): void
     {
-        $startDate = new DateTime('1970-10-23 00:00:00', new DateTimeZone('zulu'));
+        $startDate = new \DateTime('1970-10-23 00:00:00', new \DateTimeZone('zulu'));
         $rrule = new RRuleIterator('FREQ=YEARLY;UNTIL=97461212T000000', $startDate);
 
         $this->fastForwardToEnd($rrule);
 
-        $expected = (new DateTime())
-            ->setTimezone(new DateTimeZone('zulu'))
+        $expected = (new \DateTime())
+            ->setTimezone(new \DateTimeZone('zulu'))
             ->setDate(9746, 10, 23)
             ->setTime(0, 0, 0)
             ->getTimestamp();
         $this->assertEquals($expected, $rrule->current()->getTimestamp());
     }
 
-    public function testFastForwardToEndCountYearlyByYearDay()
+    public function testFastForwardToEndCountYearlyByYearDay(): void
     {
         $startDate = new \DateTime('1970-10-23 00:00:00', new \DateTimeZone('zulu'));
         $rrule = new RRuleIterator('FREQ=YEARLY;BYYEARDAY=1,20,300;COUNT=10000', $startDate);
@@ -70,23 +68,23 @@ class FastForwardToEndTest extends TestCase
         // We do not enforce the timing in case of a count rule as we cannot optimize it
         $this->fastForwardToEnd($rrule, false);
 
-        $expected = (new DateTime())
-            ->setTimezone(new DateTimeZone('zulu'))
+        $expected = (new \DateTime())
+            ->setTimezone(new \DateTimeZone('zulu'))
             ->setDate(5303, 1, 20)
             ->setTime(0, 0, 0)
             ->getTimestamp();
         $this->assertEquals($expected, $rrule->current()->getTimestamp());
     }
 
-    public function testFastForwardToEndUntilYearlyByYearDay()
+    public function testFastForwardToEndUntilYearlyByYearDay(): void
     {
         $startDate = new \DateTime('1970-10-23 00:00:00', new \DateTimeZone('zulu'));
         $rrule = new RRuleIterator('FREQ=YEARLY;BYYEARDAY=1,20,300;UNTIL=53030808T000000', $startDate);
 
         $this->fastForwardToEnd($rrule);
 
-        $expected = (new DateTime())
-            ->setTimezone(new DateTimeZone('zulu'))
+        $expected = (new \DateTime())
+            ->setTimezone(new \DateTimeZone('zulu'))
             ->setDate(5303, 1, 20)
             ->setTime(0, 0, 0)
             ->getTimestamp();
@@ -135,7 +133,7 @@ class FastForwardToEndTest extends TestCase
         // We do not enforce the timing in case of a count rule as we cannot optimize it
         $this->fastForwardToEnd($rrule, false);
 
-        $expected = (new DateTime('midnight', new DateTimeZone('zulu')))
+        $expected = (new \DateTime('midnight', new \DateTimeZone('zulu')))
             ->setDate(4226, 1, 1)
             ->setTime(8, 30, 56)
             ->getTimestamp();
@@ -149,7 +147,7 @@ class FastForwardToEndTest extends TestCase
 
         $this->fastForwardToEnd($rrule);
 
-        $expected = (new DateTime('midnight', new DateTimeZone('zulu')))
+        $expected = (new \DateTime('midnight', new \DateTimeZone('zulu')))
             ->setDate(4218, 1, 25)
             ->setTime(8, 30, 56)
             ->getTimestamp();
@@ -164,7 +162,7 @@ class FastForwardToEndTest extends TestCase
         // We do not enforce the timing in case of a count rule as we cannot optimize it
         $this->fastForwardToEnd($rrule, false);
 
-        $expected = (new DateTime('midnight', new DateTimeZone('zulu')))
+        $expected = (new \DateTime('midnight', new \DateTimeZone('zulu')))
             ->setDate(2804, 1, 23)
             ->setTime(22, 42, 31)
             ->getTimestamp();
@@ -178,7 +176,7 @@ class FastForwardToEndTest extends TestCase
 
         $this->fastForwardToEnd($rrule);
 
-        $expected = (new DateTime('midnight', new DateTimeZone('zulu')))
+        $expected = (new \DateTime('midnight', new \DateTimeZone('zulu')))
             ->setDate(2803, 12, 23)
             ->setTime(22, 42, 31)
             ->getTimestamp();
@@ -196,7 +194,7 @@ class FastForwardToEndTest extends TestCase
         // We do not enforce the timing in case of a count rule as we cannot optimize it
         $this->fastForwardToEnd($rrule, false);
 
-        $expected = (new DateTime('midnight', new DateTimeZone('America/New_York')))
+        $expected = (new \DateTime('midnight', new \DateTimeZone('America/New_York')))
             ->setDate(3398, 10, 31)
             ->getTimestamp();
         $this->assertEquals($expected, $rrule->current()->getTimestamp());
@@ -213,7 +211,7 @@ class FastForwardToEndTest extends TestCase
         // We do not enforce the timing in case of a count rule as we cannot optimize it
         $this->fastForwardToEnd($rrule, false);
 
-        $expected = (new DateTime('midnight', new DateTimeZone('America/New_York')))
+        $expected = (new \DateTime('midnight', new \DateTimeZone('America/New_York')))
             ->setDate(3398, 7, 31);
         $this->assertEquals($expected->getTimestamp(), $rrule->current()->getTimestamp());
     }
@@ -225,22 +223,25 @@ class FastForwardToEndTest extends TestCase
 
         $this->fastForwardToEnd($rrule);
 
-        $expected = (new DateTime('midnight', new DateTimeZone('America/New_York')))
+        $expected = (new \DateTime('midnight', new \DateTimeZone('America/New_York')))
             ->setDate(3398, 8, 31)
             ->getTimestamp();
         $this->assertEquals($expected, $rrule->current()->getTimestamp());
     }
 
+    /**
+     * @medium
+     */
     public function testFastForwardToEndCountMonthlyAdvanced()
     {
-        $startDate = new \DateTime('1970-01-31 00:00:00', new DateTimeZone('America/New_York'));
+        $startDate = new \DateTime('1970-01-31 00:00:00', new \DateTimeZone('America/New_York'));
         // every 2 months on the 1st Monday, 2nd Tuesday, 3rd Wednesday and 4th Thursday
         $rrule = new RRuleIterator('FREQ=MONTHLY;INTERVAL=2;BYDAY=1MO,2TU,3WE,4TH;COUNT=10000', $startDate);
 
         // We do not enforce the timing in case of a count rule as we cannot optimize it
         $this->fastForwardToEnd($rrule, false);
 
-        $expected = (new DateTime('midnight', new DateTimeZone('America/New_York')))
+        $expected = (new \DateTime('midnight', new \DateTimeZone('America/New_York')))
             ->setDate(2386, 9, 17)
             ->getTimestamp();
         $this->assertEquals($expected, $rrule->current()->getTimestamp());
@@ -248,13 +249,13 @@ class FastForwardToEndTest extends TestCase
 
     public function testFastForwardToEndUntilMonthlyAdvanced()
     {
-        $startDate = new \DateTime('1970-01-31 00:00:00', new DateTimeZone('America/New_York'));
+        $startDate = new \DateTime('1970-01-31 00:00:00', new \DateTimeZone('America/New_York'));
         // every 2 months on the 1st Monday, 2nd Tuesday, 3rd Wednesday and 4th Thursday
         $rrule = new RRuleIterator('FREQ=MONTHLY;INTERVAL=2;BYDAY=1MO,2TU,3WE,4TH;UNTIL=23860914T092500', $startDate);
 
         $this->fastForwardToEnd($rrule);
 
-        $expected = (new DateTime('midnight', new DateTimeZone('America/New_York')))
+        $expected = (new \DateTime('midnight', new \DateTimeZone('America/New_York')))
             ->setDate(2386, 9, 9)
             ->getTimestamp();
         $this->assertEquals($expected, $rrule->current()->getTimestamp());
@@ -269,7 +270,7 @@ class FastForwardToEndTest extends TestCase
         // We do not enforce the timing in case of a count rule as we cannot optimize it
         $this->fastForwardToEnd($rrule, false);
 
-        $expected = (new DateTime('midnight', new DateTimeZone($timezone)))
+        $expected = (new \DateTime('midnight', new \DateTimeZone($timezone)))
             ->setDate(2244, 8, 6)
             ->getTimestamp();
         $this->assertEquals($expected, $rrule->current()->getTimestamp());
@@ -283,7 +284,7 @@ class FastForwardToEndTest extends TestCase
 
         $this->fastForwardToEnd($rrule);
 
-        $expected = (new DateTime('midnight', new DateTimeZone($timezone)))
+        $expected = (new \DateTime('midnight', new \DateTimeZone($timezone)))
             ->setDate(2244, 8, 6)
             ->getTimestamp();
         $this->assertEquals($expected, $rrule->current()->getTimestamp());
@@ -299,7 +300,7 @@ class FastForwardToEndTest extends TestCase
         // We do not enforce the timing in case of a count rule as we cannot optimize it
         $this->fastForwardToEnd($rrule, false);
 
-        $expected = (new DateTime('midnight', new DateTimeZone($timezone)))
+        $expected = (new \DateTime('midnight', new \DateTimeZone($timezone)))
             ->setDate(2062, 1, 13)
             ->setTime(18, 0, 0)
             ->getTimestamp();
@@ -315,7 +316,7 @@ class FastForwardToEndTest extends TestCase
 
         $this->fastForwardToEnd($rrule);
 
-        $expected = (new DateTime('midnight', new DateTimeZone($timezone)))
+        $expected = (new \DateTime('midnight', new \DateTimeZone($timezone)))
             ->setDate(2062, 1, 13)
             ->setTime(18, 0, 0)
             ->getTimestamp();
@@ -331,7 +332,7 @@ class FastForwardToEndTest extends TestCase
         // We do not enforce the timing in case of a count rule as we cannot optimize it
         $this->fastForwardToEnd($rrule, false);
 
-        $expected = (new DateTime('midnight', new DateTimeZone($timezone)))
+        $expected = (new \DateTime('midnight', new \DateTimeZone($timezone)))
             ->setDate(1982, 3, 21)
             ->setTime(2, 12, 34)
             ->getTimestamp();
@@ -346,7 +347,7 @@ class FastForwardToEndTest extends TestCase
 
         $this->fastForwardToEnd($rrule);
 
-        $expected = (new DateTime('midnight', new DateTimeZone($timezone)))
+        $expected = (new \DateTime('midnight', new \DateTimeZone($timezone)))
             ->setDate(1982, 3, 21)
             ->setTime(2, 12, 34)
             ->getTimestamp();

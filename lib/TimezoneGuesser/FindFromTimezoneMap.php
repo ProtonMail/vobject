@@ -4,27 +4,25 @@ declare(strict_types=1);
 
 namespace Sabre\VObject\TimezoneGuesser;
 
-use DateTimeZone;
-
 /**
  * Some clients add 'X-LIC-LOCATION' with the olson name.
  */
 class FindFromTimezoneMap implements TimezoneFinder
 {
-    private $map = [];
+    private array $map = [];
 
-    private $patterns = [
+    private array $patterns = [
         '/^\((UTC|GMT)(\+|\-)[\d]{2}\:[\d]{2}\) (.*)/',
         '/^\((UTC|GMT)(\+|\-)[\d]{2}\.[\d]{2}\) (.*)/',
     ];
 
-    public function find(string $tzid, bool $failIfUncertain = false): ?DateTimeZone
+    public function find(string $tzid, ?bool $failIfUncertain = false): ?\DateTimeZone
     {
-        $tzid = str_replace(".", "", $tzid);
+        $tzid = str_replace('.', '', $tzid);
 
         // Next, we check if the tzid is somewhere in our tzid map.
         if ($this->hasTzInMap($tzid)) {
-            return new DateTimeZone($this->getTzFromMap($tzid));
+            return new \DateTimeZone($this->getTzFromMap($tzid));
         }
 
         // Some Microsoft products prefix the offset first, so let's strip that off
@@ -36,7 +34,7 @@ class FindFromTimezoneMap implements TimezoneFinder
             }
             $tzidAlternate = $matches[3];
             if ($this->hasTzInMap($tzidAlternate)) {
-                return new DateTimeZone($this->getTzFromMap($tzidAlternate));
+                return new \DateTimeZone($this->getTzFromMap($tzidAlternate));
             }
         }
 
@@ -51,10 +49,8 @@ class FindFromTimezoneMap implements TimezoneFinder
      * - It's not supported by some PHP versions as well as HHVM.
      * - It also returns identifiers, that are invalid values for new DateTimeZone() on some PHP versions.
      * (See timezonedata/php-bc.php and timezonedata php-workaround.php)
-     *
-     * @return array
      */
-    private function getTzMaps()
+    private function getTzMaps(): array
     {
         if ([] === $this->map) {
             $map = array_merge(
@@ -65,7 +61,7 @@ class FindFromTimezoneMap implements TimezoneFinder
                 include __DIR__.'/../timezonedata/extrazones.php'
             );
             $this->map = array_combine(
-                array_map(static fn (string $key) => str_replace(".", "", mb_strtolower($key, 'UTF-8')), array_keys($map)),
+                array_map(static fn (string $key) => str_replace('.', '', mb_strtolower($key, 'UTF-8')), array_keys($map)),
                 array_values($map),
             );
         }

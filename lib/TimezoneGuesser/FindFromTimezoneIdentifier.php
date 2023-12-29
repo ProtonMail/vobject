@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace Sabre\VObject\TimezoneGuesser;
 
-use DateTimeZone;
-use Exception;
-
 /**
  * Some clients add 'X-LIC-LOCATION' with the olson name.
  */
@@ -16,7 +13,7 @@ class FindFromTimezoneIdentifier implements TimezoneFinder
         'Europe/Kyiv' => 'Europe/Kiev',
     ];
 
-    public function find(string $tzid, bool $failIfUncertain = false): ?DateTimeZone
+    public function find(string $tzid, ?bool $failIfUncertain = false): ?\DateTimeZone
     {
         // First we will just see if the tzid is a support timezone identifier.
         //
@@ -49,19 +46,19 @@ class FindFromTimezoneIdentifier implements TimezoneFinder
         // https://bugs.php.net/bug.php?id=67881
         //
         // That's why we're checking if we'll be able to successfully instantiate
-        // \DateTimeZone() before doing so. Otherwise we could simply instantiate
+        // \DateTimeZone() before doing so. Otherwise, we could simply instantiate
         // and catch the exception.
-        $tzIdentifiers = DateTimeZone::listIdentifiers();
+        $tzIdentifiers = \DateTimeZone::listIdentifiers();
 
         try {
             if (
-                (in_array($tzid, $tzIdentifiers)) ||
-                (preg_match('/^GMT(\+|-)([0-9]{4})$/', $tzid, $matches)) ||
-                (in_array($tzid, $this->getIdentifiersBC()))
+                in_array($tzid, $tzIdentifiers)
+                || preg_match('/^GMT(\+|-)([0-9]{4})$/', $tzid, $matches)
+                || in_array($tzid, $this->getIdentifiersBC())
             ) {
-                return new DateTimeZone($tzid);
+                return new \DateTimeZone($tzid);
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
         }
 
         return null;
@@ -75,10 +72,8 @@ class FindFromTimezoneIdentifier implements TimezoneFinder
      * - It's not supported by some PHP versions as well as HHVM.
      * - It also returns identifiers, that are invalid values for new DateTimeZone() on some PHP versions.
      * (See timezonedata/php-bc.php and timezonedata php-workaround.php)
-     *
-     * @return array
      */
-    private function getIdentifiersBC()
+    private function getIdentifiersBC(): array
     {
         return include __DIR__.'/../timezonedata/php-bc.php';
     }

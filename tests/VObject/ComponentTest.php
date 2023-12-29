@@ -8,7 +8,7 @@ use Sabre\VObject\Component\VCard;
 
 class ComponentTest extends TestCase
 {
-    public function testIterate()
+    public function testIterate(): void
     {
         $comp = new VCalendar([], false);
 
@@ -21,16 +21,16 @@ class ComponentTest extends TestCase
         $count = 0;
         foreach ($comp->children() as $key => $subcomponent) {
             ++$count;
-            $this->assertInstanceOf(Component::class, $subcomponent);
+            self::assertInstanceOf(Component::class, $subcomponent);
 
             if (2 === $count) {
-                $this->assertEquals(1, $key);
+                self::assertEquals(1, $key);
             }
         }
-        $this->assertEquals(2, $count);
+        self::assertEquals(2, $count);
     }
 
-    public function testMagicGet()
+    public function testMagicGet(): void
     {
         $comp = new VCalendar([], false);
 
@@ -40,14 +40,17 @@ class ComponentTest extends TestCase
         $sub = $comp->createComponent('VTODO');
         $comp->add($sub);
 
-        $event = $comp->vevent;
-        $this->assertInstanceOf(Component::class, $event);
-        $this->assertEquals('VEVENT', $event->name);
+        $event = $comp->VEVENT;
+        self::assertInstanceOf(Component::class, $event);
+        self::assertEquals('VEVENT', $event->name);
 
-        $this->assertNull($comp->vjournal);
+        self::assertNull($comp->VJOURNAL);
     }
 
-    public function testMagicGetGroups()
+    /**
+     * @throws InvalidDataException
+     */
+    public function testMagicGetGroups(): void
     {
         $comp = new VCard();
 
@@ -60,19 +63,34 @@ class ComponentTest extends TestCase
         $sub = $comp->createProperty('EMAIL', '3@3.com');
         $comp->add($sub);
 
-        $emails = $comp->email;
-        $this->assertEquals(3, count($emails));
+        $sub = $comp->createProperty('0.EMAIL', '0@0.com');
+        $comp->add($sub);
+
+        $emails = $comp->EMAIL;
+        self::assertCount(4, $emails);
 
         $email1 = $comp->{'group1.email'};
-        $this->assertEquals('EMAIL', $email1[0]->name);
-        $this->assertEquals('GROUP1', $email1[0]->group);
+        self::assertEquals('EMAIL', $email1[0]->name);
+        self::assertEquals('GROUP1', $email1[0]->group);
 
+        $email0 = $comp->{'0.email'};
+        self::assertEquals('EMAIL', $email0[0]->name);
+        self::assertEquals('0', $email0[0]->group);
+
+        // this is supposed to return all EMAIL properties that do not have a group
         $email3 = $comp->{'.email'};
-        $this->assertEquals('EMAIL', $email3[0]->name);
-        $this->assertEquals(null, $email3[0]->group);
+        self::assertEquals('EMAIL', $email3[0]->name);
+        self::assertEquals(null, $email3[0]->group);
+
+        // this is supposed to return all properties that do not have a group
+        $nogroupProps = $comp->{'.'};
+        self::assertGreaterThan(0, count($email3));
+        foreach ($nogroupProps as $prop) {
+            self::assertEquals(null, $prop->group);
+        }
     }
 
-    public function testAddGroupProperties()
+    public function testAddGroupProperties(): void
     {
         $comp = new VCard([
             'VERSION' => '3.0',
@@ -83,13 +101,13 @@ class ComponentTest extends TestCase
 
         foreach (['item2', 'ITEM1'] as $group) {
             $prop = $comp->{"$group.X-ABLabel"};
-            $this->assertInstanceOf(Property::class, $prop);
-            $this->assertSame("$group-Foo", (string) $prop);
-            $this->assertSame($group, $prop->group);
+            self::assertInstanceOf(Property::class, $prop);
+            self::assertSame("$group-Foo", (string) $prop);
+            self::assertSame($group, $prop->group);
         }
     }
 
-    public function testMagicIsset()
+    public function testMagicIsset(): void
     {
         $comp = new VCalendar();
 
@@ -99,65 +117,65 @@ class ComponentTest extends TestCase
         $sub = $comp->createComponent('VTODO');
         $comp->add($sub);
 
-        $this->assertTrue(isset($comp->vevent));
-        $this->assertTrue(isset($comp->vtodo));
-        $this->assertFalse(isset($comp->vjournal));
+        self::assertTrue(isset($comp->vevent));
+        self::assertTrue(isset($comp->vtodo));
+        self::assertFalse(isset($comp->vjournal));
     }
 
-    public function testMagicSetScalar()
+    public function testMagicSetScalar(): void
     {
         $comp = new VCalendar();
         $comp->myProp = 'myValue';
 
-        $this->assertInstanceOf(Property::class, $comp->MYPROP);
-        $this->assertEquals('myValue', (string) $comp->MYPROP);
+        self::assertInstanceOf(Property::class, $comp->MYPROP);
+        self::assertEquals('myValue', (string) $comp->MYPROP);
     }
 
-    public function testMagicSetScalarTwice()
+    public function testMagicSetScalarTwice(): void
     {
         $comp = new VCalendar([], false);
         $comp->myProp = 'myValue';
         $comp->myProp = 'myValue';
 
-        $this->assertEquals(1, count($comp->children()));
-        $this->assertInstanceOf(Property::class, $comp->MYPROP);
-        $this->assertEquals('myValue', (string) $comp->MYPROP);
+        self::assertCount(1, $comp->children());
+        self::assertInstanceOf(Property::class, $comp->MYPROP);
+        self::assertEquals('myValue', (string) $comp->MYPROP);
     }
 
-    public function testMagicSetArray()
+    public function testMagicSetArray(): void
     {
         $comp = new VCalendar();
         $comp->ORG = ['Acme Inc', 'Section 9'];
 
-        $this->assertInstanceOf(Property::class, $comp->ORG);
-        $this->assertEquals(['Acme Inc', 'Section 9'], $comp->ORG->getParts());
+        self::assertInstanceOf(Property::class, $comp->ORG);
+        self::assertEquals(['Acme Inc', 'Section 9'], $comp->ORG->getParts());
     }
 
-    public function testMagicSetComponent()
+    public function testMagicSetComponent(): void
     {
         $comp = new VCalendar();
 
         // Note that 'myProp' is ignored here.
         $comp->myProp = $comp->createComponent('VEVENT');
 
-        $this->assertEquals(1, count($comp));
+        self::assertCount(1, $comp);
 
-        $this->assertEquals('VEVENT', $comp->VEVENT->name);
+        self::assertEquals('VEVENT', $comp->VEVENT->name);
     }
 
-    public function testMagicSetTwice()
+    public function testMagicSetTwice(): void
     {
         $comp = new VCalendar([], false);
 
         $comp->VEVENT = $comp->createComponent('VEVENT');
         $comp->VEVENT = $comp->createComponent('VEVENT');
 
-        $this->assertEquals(1, count($comp->children()));
+        self::assertCount(1, $comp->children());
 
-        $this->assertEquals('VEVENT', $comp->VEVENT->name);
+        self::assertEquals('VEVENT', $comp->VEVENT->name);
     }
 
-    public function testArrayAccessGet()
+    public function testArrayAccessGet(): void
     {
         $comp = new VCalendar([], false);
 
@@ -171,12 +189,12 @@ class ComponentTest extends TestCase
 
         $comp->add($event2);
 
-        $this->assertEquals(2, count($comp->children()));
-        $this->assertTrue($comp->vevent[1] instanceof Component);
-        $this->assertEquals('Event 2', (string) $comp->vevent[1]->summary);
+        self::assertCount(2, $comp->children());
+        self::assertTrue($comp->vevent[1] instanceof Component);
+        self::assertEquals('Event 2', (string) $comp->vevent[1]->summary);
     }
 
-    public function testArrayAccessExists()
+    public function testArrayAccessExists(): void
     {
         $comp = new VCalendar();
 
@@ -190,113 +208,113 @@ class ComponentTest extends TestCase
 
         $comp->add($event2);
 
-        $this->assertTrue(isset($comp->vevent[0]));
-        $this->assertTrue(isset($comp->vevent[1]));
+        self::assertTrue(isset($comp->vevent[0]));
+        self::assertTrue(isset($comp->vevent[1]));
     }
 
-    public function testArrayAccessSet()
+    public function testArrayAccessSet(): void
     {
         $this->expectException(\LogicException::class);
         $comp = new VCalendar();
         $comp['hey'] = 'hi there';
     }
 
-    public function testArrayAccessUnset()
+    public function testArrayAccessUnset(): void
     {
         $this->expectException(\LogicException::class);
         $comp = new VCalendar();
         unset($comp[0]);
     }
 
-    public function testAddScalar()
+    public function testAddScalar(): void
     {
         $comp = new VCalendar([], false);
 
         $comp->add('myprop', 'value');
 
-        $this->assertEquals(1, count($comp->children()));
+        self::assertCount(1, $comp->children());
 
         $bla = $comp->children()[0];
 
-        $this->assertTrue($bla instanceof Property);
-        $this->assertEquals('MYPROP', $bla->name);
-        $this->assertEquals('value', (string) $bla);
+        self::assertTrue($bla instanceof Property);
+        self::assertEquals('MYPROP', $bla->name);
+        self::assertEquals('value', (string) $bla);
     }
 
-    public function testAddScalarParams()
+    public function testAddScalarParams(): void
     {
         $comp = new VCalendar([], false);
 
         $comp->add('myprop', 'value', ['param1' => 'value1']);
 
-        $this->assertEquals(1, count($comp->children()));
+        self::assertCount(1, $comp->children());
 
         $bla = $comp->children()[0];
 
-        $this->assertInstanceOf(Property::class, $bla);
-        $this->assertEquals('MYPROP', $bla->name);
-        $this->assertEquals('value', (string) $bla);
+        self::assertInstanceOf(Property::class, $bla);
+        self::assertEquals('MYPROP', $bla->name);
+        self::assertEquals('value', (string) $bla);
 
-        $this->assertEquals(1, count($bla->parameters()));
+        self::assertCount(1, $bla->parameters());
 
-        $this->assertEquals('PARAM1', $bla->parameters['PARAM1']->name);
-        $this->assertEquals('value1', $bla->parameters['PARAM1']->getValue());
+        self::assertEquals('PARAM1', $bla->parameters['PARAM1']->name);
+        self::assertEquals('value1', $bla->parameters['PARAM1']->getValue());
     }
 
-    public function testAddComponent()
+    public function testAddComponent(): void
     {
         $comp = new VCalendar([], false);
 
         $comp->add($comp->createComponent('VEVENT'));
 
-        $this->assertEquals(1, count($comp->children()));
+        self::assertCount(1, $comp->children());
 
-        $this->assertEquals('VEVENT', $comp->VEVENT->name);
+        self::assertEquals('VEVENT', $comp->VEVENT->name);
     }
 
-    public function testAddComponentTwice()
+    public function testAddComponentTwice(): void
     {
         $comp = new VCalendar([], false);
 
         $comp->add($comp->createComponent('VEVENT'));
         $comp->add($comp->createComponent('VEVENT'));
 
-        $this->assertEquals(2, count($comp->children()));
+        self::assertCount(2, $comp->children());
 
-        $this->assertEquals('VEVENT', $comp->VEVENT->name);
+        self::assertEquals('VEVENT', $comp->VEVENT->name);
     }
 
-    public function testAddArgFail()
+    public function testAddArgFail(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $comp = new VCalendar();
         $comp->add($comp->createComponent('VEVENT'), 'hello');
     }
 
-    public function testAddArgFail2()
+    public function testAddArgFail2(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $comp = new VCalendar();
         $comp->add([]);
     }
 
-    public function testMagicUnset()
+    public function testMagicUnset(): void
     {
         $comp = new VCalendar([], false);
         $comp->add($comp->createComponent('VEVENT'));
 
         unset($comp->vevent);
 
-        $this->assertEquals(0, count($comp->children()));
+        self::assertCount(0, $comp->children());
     }
 
-    public function testCount()
+    public function testCount(): void
     {
         $comp = new VCalendar();
-        $this->assertEquals(1, $comp->count());
+        self::assertEquals(1, $comp->count());
     }
 
-    public function testChildren()
+    public function testChildren(): void
     {
         $comp = new VCalendar([], false);
 
@@ -305,11 +323,14 @@ class ComponentTest extends TestCase
         $comp->add($comp->createComponent('VTODO'));
 
         $r = $comp->children();
-        $this->assertIsArray($r);
-        $this->assertEquals(2, count($r));
+        self::assertIsArray($r);
+        self::assertCount(2, $r);
     }
 
-    public function testGetComponents()
+    /**
+     * @throws InvalidDataException
+     */
+    public function testGetComponents(): void
     {
         $comp = new VCalendar();
 
@@ -317,18 +338,18 @@ class ComponentTest extends TestCase
         $comp->add($comp->createComponent('VTODO'));
 
         $r = $comp->getComponents();
-        $this->assertIsArray($r);
-        $this->assertEquals(1, count($r));
-        $this->assertEquals('VTODO', $r[0]->name);
+        self::assertIsArray($r);
+        self::assertCount(1, $r);
+        self::assertEquals('VTODO', $r[0]->name);
     }
 
-    public function testSerialize()
+    public function testSerialize(): void
     {
         $comp = new VCalendar([], false);
-        $this->assertEquals("BEGIN:VCALENDAR\r\nEND:VCALENDAR\r\n", $comp->serialize());
+        self::assertEquals("BEGIN:VCALENDAR\r\nEND:VCALENDAR\r\n", $comp->serialize());
     }
 
-    public function testSerializeChildren()
+    public function testSerializeChildren(): void
     {
         $comp = new VCalendar([], false);
         $event = $comp->add($comp->createComponent('VEVENT'));
@@ -338,10 +359,10 @@ class ComponentTest extends TestCase
 
         $str = $comp->serialize();
 
-        $this->assertEquals("BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nEND:VEVENT\r\nBEGIN:VTODO\r\nEND:VTODO\r\nEND:VCALENDAR\r\n", $str);
+        self::assertEquals("BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nEND:VEVENT\r\nBEGIN:VTODO\r\nEND:VTODO\r\nEND:VCALENDAR\r\n", $str);
     }
 
-    public function testSerializeOrderCompAndProp()
+    public function testSerializeOrderCompAndProp(): void
     {
         $comp = new VCalendar([], false);
         $comp->add($event = $comp->createComponent('VEVENT'));
@@ -352,10 +373,10 @@ class ComponentTest extends TestCase
         unset($event->DTSTAMP, $event->UID);
         $str = $comp->serialize();
 
-        $this->assertEquals("BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPROP1:BLABLA\r\nBEGIN:VTIMEZONE\r\nEND:VTIMEZONE\r\nBEGIN:VEVENT\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n", $str);
+        self::assertEquals("BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPROP1:BLABLA\r\nBEGIN:VTIMEZONE\r\nEND:VTIMEZONE\r\nBEGIN:VEVENT\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n", $str);
     }
 
-    public function testAnotherSerializeOrderProp()
+    public function testAnotherSerializeOrderProp(): void
     {
         $prop4s = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
 
@@ -378,21 +399,21 @@ class ComponentTest extends TestCase
 
         $str = $comp->serialize();
 
-        $this->assertEquals("BEGIN:VCARD\r\nVERSION:2.0\r\nSOMEPROP:FOO\r\nANOTHERPROP:FOO\r\nTHIRDPROP:FOO\r\nPROP4:FOO 1\r\nPROP4:FOO 2\r\nPROP4:FOO 3\r\nPROP4:FOO 4\r\nPROP4:FOO 5\r\nPROP4:FOO 6\r\nPROP4:FOO 7\r\nPROP4:FOO 8\r\nPROP4:FOO 9\r\nPROP4:FOO 10\r\nPROPNUMBERFIVE:FOO\r\nPROPNUMBERSIX:FOO\r\nPROPNUMBERSEVEN:FOO\r\nPROPNUMBEREIGHT:FOO\r\nPROPNUMBERNINE:FOO\r\nPROPNUMBERTEN:FOO\r\nUID:FOO\r\nEND:VCARD\r\n", $str);
+        self::assertEquals("BEGIN:VCARD\r\nVERSION:2.0\r\nSOMEPROP:FOO\r\nANOTHERPROP:FOO\r\nTHIRDPROP:FOO\r\nPROP4:FOO 1\r\nPROP4:FOO 2\r\nPROP4:FOO 3\r\nPROP4:FOO 4\r\nPROP4:FOO 5\r\nPROP4:FOO 6\r\nPROP4:FOO 7\r\nPROP4:FOO 8\r\nPROP4:FOO 9\r\nPROP4:FOO 10\r\nPROPNUMBERFIVE:FOO\r\nPROPNUMBERSIX:FOO\r\nPROPNUMBERSEVEN:FOO\r\nPROPNUMBEREIGHT:FOO\r\nPROPNUMBERNINE:FOO\r\nPROPNUMBERTEN:FOO\r\nUID:FOO\r\nEND:VCARD\r\n", $str);
     }
 
-    public function testInstantiateWithChildren()
+    public function testInstantiateWithChildren(): void
     {
         $comp = new VCard([
             'ORG' => ['Acme Inc.', 'Section 9'],
             'FN' => 'Finn The Human',
         ]);
 
-        $this->assertEquals(['Acme Inc.', 'Section 9'], $comp->ORG->getParts());
-        $this->assertEquals('Finn The Human', $comp->FN->getValue());
+        self::assertEquals(['Acme Inc.', 'Section 9'], $comp->ORG->getParts());
+        self::assertEquals('Finn The Human', $comp->FN->getValue());
     }
 
-    public function testInstantiateSubComponent()
+    public function testInstantiateSubComponent(): void
     {
         $comp = new VCalendar();
         $event = $comp->createComponent('VEVENT', [
@@ -400,10 +421,10 @@ class ComponentTest extends TestCase
         ]);
         $comp->add($event);
 
-        $this->assertEquals('12345', $comp->VEVENT->UID->getValue());
+        self::assertEquals('12345', $comp->VEVENT->UID->getValue());
     }
 
-    public function testRemoveByName()
+    public function testRemoveByName(): void
     {
         $comp = new VCalendar([], false);
         $comp->add('prop1', 'val1');
@@ -411,22 +432,25 @@ class ComponentTest extends TestCase
         $comp->add('prop2', 'val2');
 
         $comp->remove('prop2');
-        $this->assertFalse(isset($comp->prop2));
-        $this->assertTrue(isset($comp->prop1));
+        self::assertFalse(isset($comp->prop2));
+        self::assertTrue(isset($comp->prop1));
     }
 
-    public function testRemoveByObj()
+    public function testRemoveByObj(): void
     {
         $comp = new VCalendar([], false);
         $comp->add('prop1', 'val1');
         $prop = $comp->add('prop2', 'val2');
 
         $comp->remove($prop);
-        $this->assertFalse(isset($comp->prop2));
-        $this->assertTrue(isset($comp->prop1));
+        self::assertFalse(isset($comp->prop2));
+        self::assertTrue(isset($comp->prop1));
     }
 
-    public function testRemoveNotFound()
+    /**
+     * @throws InvalidDataException
+     */
+    public function testRemoveNotFound(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $comp = new VCalendar([], false);
@@ -437,28 +461,28 @@ class ComponentTest extends TestCase
     /**
      * @dataProvider ruleData
      */
-    public function testValidateRules($componentList, $errorCount)
+    public function testValidateRules(array $componentList, int $errorCount): void
     {
         $vcard = new Component\VCard();
 
-        $component = new FakeComponent($vcard, 'Hi', [], $defaults = false);
+        $component = new FakeComponent($vcard, 'Hi', [], false);
         foreach ($componentList as $v) {
             $component->add($v, 'Hello.');
         }
 
-        $this->assertEquals($errorCount, count($component->validate()));
+        self::assertCount($errorCount, $component->validate());
     }
 
-    public function testValidateRepair()
+    public function testValidateRepair(): void
     {
         $vcard = new Component\VCard();
 
-        $component = new FakeComponent($vcard, 'Hi', [], $defaults = false);
+        $component = new FakeComponent($vcard, 'Hi', [], false);
         $component->validate(Component::REPAIR);
-        $this->assertEquals('yow', $component->BAR->getValue());
+        self::assertEquals('yow', $component->BAR->getValue());
     }
 
-    public function testValidateRepairShouldNotDeduplicatePropertiesWhenValuesDiffer()
+    public function testValidateRepairShouldNotDeduplicatePropertiesWhenValuesDiffer(): void
     {
         $vcard = new Component\VCard();
 
@@ -469,12 +493,12 @@ class ComponentTest extends TestCase
 
         $messages = $component->validate(Component::REPAIR);
 
-        $this->assertEquals(1, count($messages));
-        $this->assertEquals(3, $messages[0]['level']);
-        $this->assertEquals(2, count($component->GIR));
+        self::assertCount(1, $messages);
+        self::assertEquals(3, $messages[0]['level']);
+        self::assertCount(2, $component->GIR);
     }
 
-    public function testValidateRepairShouldNotDeduplicatePropertiesWhenParametersDiffer()
+    public function testValidateRepairShouldNotDeduplicatePropertiesWhenParametersDiffer(): void
     {
         $vcard = new Component\VCard();
 
@@ -485,12 +509,12 @@ class ComponentTest extends TestCase
 
         $messages = $component->validate(Component::REPAIR);
 
-        $this->assertEquals(1, count($messages));
-        $this->assertEquals(3, $messages[0]['level']);
-        $this->assertEquals(2, count($component->GIR));
+        self::assertCount(1, $messages);
+        self::assertEquals(3, $messages[0]['level']);
+        self::assertCount(2, $component->GIR);
     }
 
-    public function testValidateRepairShouldDeduplicatePropertiesWhenValuesAndParametersAreEqual()
+    public function testValidateRepairShouldDeduplicatePropertiesWhenValuesAndParametersAreEqual(): void
     {
         $vcard = new Component\VCard();
 
@@ -501,12 +525,12 @@ class ComponentTest extends TestCase
 
         $messages = $component->validate(Component::REPAIR);
 
-        $this->assertEquals(1, count($messages));
-        $this->assertEquals(1, $messages[0]['level']);
-        $this->assertEquals(1, count($component->GIR));
+        self::assertCount(1, $messages);
+        self::assertEquals(1, $messages[0]['level']);
+        self::assertCount(1, $component->GIR);
     }
 
-    public function testValidateRepairShouldDeduplicatePropertiesWhenValuesAreEqual()
+    public function testValidateRepairShouldDeduplicatePropertiesWhenValuesAreEqual(): void
     {
         $vcard = new Component\VCard();
 
@@ -517,12 +541,12 @@ class ComponentTest extends TestCase
 
         $messages = $component->validate(Component::REPAIR);
 
-        $this->assertEquals(1, count($messages));
-        $this->assertEquals(1, $messages[0]['level']);
-        $this->assertEquals(1, count($component->GIR));
+        self::assertCount(1, $messages);
+        self::assertEquals(1, $messages[0]['level']);
+        self::assertCount(1, $component->GIR);
     }
 
-    public function ruleData()
+    public function ruleData(): array
     {
         return [
             [[], 2],
@@ -539,7 +563,7 @@ class ComponentTest extends TestCase
 
 class FakeComponent extends Component
 {
-    public function getValidationRules()
+    public function getValidationRules(): array
     {
         return [
             'FOO' => '0',
@@ -550,7 +574,7 @@ class FakeComponent extends Component
         ];
     }
 
-    public function getDefaults()
+    public function getDefaults(): array
     {
         return [
             'BAR' => 'yow',

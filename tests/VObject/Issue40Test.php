@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
  */
 class Issue40Test extends TestCase
 {
-    public function testEncode()
+    public function testEncode(): void
     {
         $card = new Component\VCard();
         $card->add('N', ['van der Harten', ['Rene', 'J.'], '', 'Sir', 'R.D.O.N.'], ['SORT-AS' => ['Harten', 'Rene']]);
@@ -27,6 +27,6 @@ class Issue40Test extends TestCase
             '',
         ]);
 
-        $this->assertEquals($expected, $card->serialize());
+        self::assertEquals($expected, $card->serialize());
     }
 }

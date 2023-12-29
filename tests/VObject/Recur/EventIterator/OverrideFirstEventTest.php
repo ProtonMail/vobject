@@ -2,7 +2,6 @@
 
 namespace Sabre\VObject\Recur\EventIterator;
 
-use DateTime;
 use PHPUnit\Framework\TestCase;
 use Sabre\VObject\Reader;
 
@@ -10,7 +9,7 @@ class OverrideFirstEventTest extends TestCase
 {
     use \Sabre\VObject\PHPUnitAssertions;
 
-    public function testOverrideFirstEvent()
+    public function testOverrideFirstEvent(): void
     {
         $input = <<<ICS
 BEGIN:VCALENDAR
@@ -31,7 +30,7 @@ END:VCALENDAR
 ICS;
 
         $vcal = Reader::read($input);
-        $vcal = $vcal->expand(new DateTime('2014-08-01'), new DateTime('2014-09-01'));
+        $vcal = $vcal->expand(new \DateTime('2014-08-01'), new \DateTime('2014-09-01'));
 
         $expected = <<<ICS
 BEGIN:VCALENDAR
@@ -69,13 +68,13 @@ END:VEVENT
 END:VCALENDAR
 ICS;
 
-        $this->assertVObjectEqualsVObject(
+        self::assertVObjectEqualsVObject(
             $expected,
             $vcal
         );
     }
 
-    public function testRemoveFirstEvent()
+    public function testRemoveFirstEvent(): void
     {
         $input = <<<ICS
 BEGIN:VCALENDAR
@@ -91,7 +90,7 @@ END:VCALENDAR
 ICS;
 
         $vcal = Reader::read($input);
-        $vcal = $vcal->expand(new DateTime('2014-08-01'), new DateTime('2014-08-19'));
+        $vcal = $vcal->expand(new \DateTime('2014-08-01'), new \DateTime('2014-08-19'));
 
         $expected = <<<ICS
 BEGIN:VCALENDAR
@@ -111,7 +110,7 @@ END:VEVENT
 END:VCALENDAR
 ICS;
 
-        $this->assertVObjectEqualsVObject(
+        self::assertVObjectEqualsVObject(
             $expected,
             $vcal
         );

@@ -10,12 +10,12 @@ class VJournalTest extends TestCase
     /**
      * @dataProvider timeRangeTestData
      */
-    public function testInTimeRange(VJournal $vtodo, $start, $end, $outcome)
+    public function testInTimeRange(VJournal $vtodo, \DateTime $start, \DateTime $end, bool $outcome): void
     {
-        $this->assertEquals($outcome, $vtodo->isInTimeRange($start, $end));
+        self::assertEquals($outcome, $vtodo->isInTimeRange($start, $end));
     }
 
-    public function testValidate()
+    public function testValidate(): void
     {
         $input = <<<HI
 BEGIN:VCALENDAR
@@ -36,10 +36,10 @@ HI;
             $messages[] = $warning['message'];
         }
 
-        $this->assertEquals([], $messages);
+        self::assertEquals([], $messages);
     }
 
-    public function testValidateBroken()
+    public function testValidateBroken(): void
     {
         $input = <<<HI
 BEGIN:VCALENDAR
@@ -62,13 +62,13 @@ HI;
             $messages[] = $warning['message'];
         }
 
-        $this->assertEquals(
+        self::assertEquals(
             ['URL MUST NOT appear more than once in a VJOURNAL component'],
             $messages
         );
     }
 
-    public function timeRangeTestData()
+    public function timeRangeTestData(): array
     {
         $calendar = new VCalendar();
 

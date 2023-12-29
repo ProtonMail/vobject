@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 class Issue36WorkAroundTest extends TestCase
 {
-    public function testWorkaround()
+    public function testWorkaround(): void
     {
         // See https://github.com/fruux/sabre-vobject/issues/36
         $event = <<<ICS
@@ -34,6 +34,6 @@ ICS;
 
         // If this does not throw an exception, it's all good.
         $it = new Recur\EventIterator($obj, '1833bd44-188b-405c-9f85-1a12105318aa');
-        $this->assertInstanceOf(Recur\EventIterator::class, $it);
+        self::assertInstanceOf(Recur\EventIterator::class, $it);
     }
 }

@@ -3,7 +3,14 @@
 namespace Sabre\VObject\ITip;
 
 use PHPUnit\Framework\TestCase;
+use Sabre\VObject\Component\VEvent;
+use Sabre\VObject\InvalidDataException;
+use Sabre\VObject\ParseException;
+use Sabre\VObject\PHPUnitAssertions;
 use Sabre\VObject\Reader;
+use Sabre\VObject\Recur\MaxInstancesExceededException;
+use Sabre\VObject\Recur\NoInstancesException;
+use Sabre\VObject\Version;
 
 /**
  * Utilities for testing the broker.
@@ -14,38 +21,44 @@ use Sabre\VObject\Reader;
  */
 abstract class BrokerTester extends TestCase
 {
-    use \Sabre\VObject\PHPUnitAssertions;
+    use PHPUnitAssertions;
 
-    public function parse($oldMessage, $newMessage, $expected = [], $currentUser = 'mailto:one@example.org')
+    public function parse($oldMessage, $newMessage, array $expected = [], string $currentUser = 'mailto:one@example.org'): void
     {
         $broker = new Broker();
         $result = $broker->parseEvent($newMessage, $currentUser, $oldMessage);
 
-        $this->assertEquals(count($expected), count($result));
+        self::assertSameSize($expected, $result);
 
         foreach ($expected as $index => $ex) {
             $message = $result[$index];
 
             foreach ($ex as $key => $val) {
                 if ('message' === $key) {
-                    $this->assertVObjectEqualsVObject(
+                    self::assertVObjectEqualsVObject(
                         $val,
                         $message->message->serialize()
                     );
                 } else {
-                    $this->assertEquals($val, $message->$key);
+                    self::assertEquals($val, $message->$key);
                 }
             }
         }
     }
 
-    public function process($input, $existingObject = null, $expected = false)
+    /**
+     * @throws ParseException
+     * @throws MaxInstancesExceededException
+     * @throws NoInstancesException
+     * @throws InvalidDataException
+     */
+    public function process($input, $existingObject = null, $expected = false): void
     {
-        $version = \Sabre\VObject\Version::VERSION;
+        $version = Version::VERSION;
 
         $vcal = Reader::read($input);
 
-        $mainComponent = new \Sabre\VObject\Component\VEvent($vcal, 'VEVENT');
+        $mainComponent = new VEvent($vcal, 'VEVENT');
         foreach ($vcal->getComponents() as $mainComponent) {
             if ('VEVENT' === $mainComponent->name) {
                 break;
@@ -80,12 +93,12 @@ abstract class BrokerTester extends TestCase
         $result = $broker->processMessage($message, $existingObject);
 
         if (is_null($expected)) {
-            $this->assertTrue(!$result);
+            self::assertTrue(!$result);
 
             return;
         }
 
-        $this->assertVObjectEqualsVObject(
+        self::assertVObjectEqualsVObject(
             $expected,
             $result
         );

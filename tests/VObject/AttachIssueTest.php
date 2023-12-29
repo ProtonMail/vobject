@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 class AttachIssueTest extends TestCase
 {
-    public function testRead()
+    public function testRead(): void
     {
         $event = <<<ICS
 BEGIN:VCALENDAR\r
@@ -17,6 +17,6 @@ END:VCALENDAR\r
 
 ICS;
         $obj = Reader::read($event);
-        $this->assertEquals($event, $obj->serialize());
+        self::assertEquals($event, $obj->serialize());
     }
 }
