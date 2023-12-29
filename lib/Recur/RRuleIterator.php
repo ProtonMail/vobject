@@ -28,6 +28,8 @@ class RRuleIterator implements \Iterator
      */
     public const dateUpperLimit = 253402300799;
 
+    private bool $yearlySkipUpperLimit;
+
     /**
      * Creates the Iterator.
      *
@@ -35,11 +37,12 @@ class RRuleIterator implements \Iterator
      *
      * @throws InvalidDataException
      */
-    public function __construct($rrule, \DateTimeInterface $start)
+    public function __construct($rrule, \DateTimeInterface $start, bool $yearlySkipUpperLimit = true)
     {
         $this->startDate = $start;
         $this->parseRRule($rrule);
         $this->currentDate = clone $this->startDate;
+        $this->yearlySkipUpperLimit = $yearlySkipUpperLimit;
     }
 
     /* Implementation of the Iterator interface {{{ */
@@ -823,6 +826,14 @@ class RRuleIterator implements \Iterator
                     (int) $currentMonth,
                     (int) $currentDayOfMonth
                 );
+
+                // To prevent running this forever (better: until we hit the max date of DateTimeImmutable) we simply
+                // stop at 9999-12-31. Looks like the year 10000 problem is not solved in php ....
+                if (!$this->yearlySkipUpperLimit && ($this->currentDate->getTimestamp() > self::dateUpperLimit)) {
+                    $this->currentDate = null;
+
+                    return;
+                }
             }
 
             // If we made it here, it means we got a valid occurrence

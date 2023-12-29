@@ -229,6 +229,9 @@ class FastForwardToEndTest extends TestCase
         $this->assertEquals($expected, $rrule->current()->getTimestamp());
     }
 
+    /**
+     * @medium
+     */
     public function testFastForwardToEndCountMonthlyAdvanced()
     {
         $startDate = new \DateTime('1970-01-31 00:00:00', new \DateTimeZone('America/New_York'));

@@ -1052,7 +1052,14 @@ class RRuleIteratorTest extends TestCase
             'FREQ=YEARLY;BYMONTH=5;BYSETPOS=3;BYMONTHDAY=3',
             '2022-03-03 15:45:00',
             [],
-            'yearly', null, 1, null, '2022-05-01'
+            'yearly',
+            null,
+            1,
+            null,
+            '2022-05-01',
+            'UTC',
+            false,
+            false,
         );
     }
 
@@ -1245,10 +1252,11 @@ class RRuleIteratorTest extends TestCase
         $expectedUntil = null,
         string $fastForward = null,
         string $tz = 'UTC',
-        bool $runTillTheEnd = false
+        bool $runTillTheEnd = false,
+        bool $yearlySkipUpperLimit = true
     ): void {
         $dt = new \DateTime($start, new \DateTimeZone($tz));
-        $parser = new RRuleIterator($rule, $dt);
+        $parser = new RRuleIterator($rule, $dt, $yearlySkipUpperLimit);
 
         $this->assertEquals($expectedFreq, $parser->getFrequency());
         $this->assertEquals($expectedCount, $parser->getCount());
