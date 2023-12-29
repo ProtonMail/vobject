@@ -1,6 +1,10 @@
 ChangeLog
 =========
 
+4.29.0 (2023-12-29)
+-------------------
+* #98 Chore/merge upstream master 20231228
+
 4.28.0 (2023-12-19)
 -------------------
 * #96 use dubai instead of muscat
