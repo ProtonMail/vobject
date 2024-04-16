@@ -363,6 +363,14 @@ class RRuleIterator implements \Iterator
     protected float $counter = 0;
 
     /**
+     * The leap offset in seconds, by iteration.
+     *
+     * An occurrence may add an offset, for example if it falls on a DST change.
+     * It is accounted for in this variable. It should be removed on the next iteration.
+     */
+    protected array $leapOffset = [];
+
+    /**
      * Which weekdays to recur.
      *
      * This is an array of weekdays
@@ -432,7 +440,7 @@ class RRuleIterator implements \Iterator
      */
     protected function nextHourly($amount = 1): void
     {
-        $this->currentDate = $this->currentDate->modify('+'.$amount * $this->interval.' hours');
+        $this->currentDate = $this->getNextIterationDateTime($this->currentDate, modify: '+'.$amount * $this->interval.' hours');
     }
 
     /**
@@ -441,7 +449,7 @@ class RRuleIterator implements \Iterator
     protected function nextDaily($amount = 1): void
     {
         if (!$this->byHour && !$this->byDay) {
-            $this->currentDate = $this->currentDate->modify('+'.$amount * $this->interval.' days');
+            $this->currentDate = $this->getNextIterationDateTime($this->currentDate, modify: '+'.$amount * $this->interval.' days');
 
             return;
         }
@@ -465,13 +473,13 @@ class RRuleIterator implements \Iterator
             if ($this->byHour) {
                 if ('23' == $this->currentDate->format('G')) {
                     // to obey the interval rule
-                    $this->currentDate = $this->currentDate->modify('+'.(($amount * $this->interval) - 1).' days');
+                    $this->currentDate = $this->getNextIterationDateTime($this->currentDate, modify: '+'.(($amount * $this->interval) - 1).' days');
                     $amount = 1;
                 }
 
-                $this->currentDate = $this->currentDate->modify('+1 hours');
+                $this->currentDate = $this->getNextIterationDateTime($this->currentDate, modify: '+1 hours');
             } else {
-                $this->currentDate = $this->currentDate->modify('+'.($amount * $this->interval).' days');
+                $this->currentDate = $this->getNextIterationDateTime($this->currentDate, modify: '+'.($amount * $this->interval).' days');
                 $amount = 1;
             }
 
@@ -502,7 +510,7 @@ class RRuleIterator implements \Iterator
     protected function nextWeekly($amount = 1): void
     {
         if (!$this->byHour && !$this->byDay) {
-            $this->currentDate = $this->currentDate->modify('+'.($amount * $this->interval).' weeks');
+            $this->currentDate = $this->getNextIterationDateTime($this->currentDate, modify: '+'.($amount * $this->interval).' weeks');
 
             return;
         }
@@ -522,9 +530,9 @@ class RRuleIterator implements \Iterator
 
         do {
             if ($this->byHour) {
-                $this->currentDate = $this->currentDate->modify('+1 hours');
+                $this->currentDate = $this->getNextIterationDateTime($this->currentDate, modify: '+1 hours');
             } else {
-                $this->currentDate = $this->currentDate->modify('+1 days');
+                $this->currentDate = $this->getNextIterationDateTime($this->currentDate, modify: '+1 days');
             }
 
             // Current day of the week
@@ -535,12 +543,12 @@ class RRuleIterator implements \Iterator
 
             // We need to roll over to the next week
             if ($currentDay === $firstDay && (!$this->byHour || '0' == $currentHour)) {
-                $this->currentDate = $this->currentDate->modify('+'.(($amount * $this->interval) - 1).' weeks');
+                $this->currentDate = $this->getNextIterationDateTime($this->currentDate, modify: '+'.(($amount * $this->interval) - 1).' weeks');
                 $amount = 1;
                 // We need to go to the first day of this week, but only if we
                 // are not already on this first day of this week.
                 if ($this->currentDate->format('w') != $firstDay) {
-                    $this->currentDate = $this->currentDate->modify('last '.$this->dayNames[$this->dayMap[$this->weekStart]]);
+                    $this->currentDate = $this->getNextIterationDateTime($this->currentDate, modify: 'last '.$this->dayNames[$this->dayMap[$this->weekStart]]);
                 }
             }
 
@@ -564,13 +572,13 @@ class RRuleIterator implements \Iterator
             // occur to the next month. We Must skip these invalid
             // entries.
             if ($currentDayOfMonth < 29) {
-                $this->currentDate = $this->currentDate->modify('+'.($amount * $this->interval).' months');
+                $this->currentDate = $this->getNextIterationDateTime($this->currentDate, modify: '+'.($amount * $this->interval).' months');
             } else {
                 $increase = $amount - 1;
                 do {
                     ++$increase;
                     $tempDate = clone $this->currentDate;
-                    $tempDate = $tempDate->modify('+ '.($this->interval * $increase).' months');
+                    $tempDate = $this->getNextIterationDateTime($tempDate, modify: '+ '.($this->interval * $increase).' months');
                 } while ($tempDate->format('j') != $currentDayOfMonth);
                 $this->currentDate = $tempDate;
             }
@@ -615,7 +623,7 @@ class RRuleIterator implements \Iterator
                 1
             );
             // end of workaround
-            $this->currentDate = $this->currentDate->modify('+ '.($amount * $this->interval).' months');
+            $this->currentDate = $this->getNextIterationDateTime($this->currentDate, modify: '+ '.($amount * $this->interval).' months');
             $amount = 1;
 
             // This goes to 0 because we need to start counting at the
@@ -676,7 +684,7 @@ class RRuleIterator implements \Iterator
                     // 400. (1800, 1900, 2100). So we just rely on the datetime
                     // functions instead.
                     $nextDate = clone $this->currentDate;
-                    $nextDate = $nextDate->modify('+ '.($this->interval * $counter).' years');
+                    $nextDate = $this->getNextIterationDateTime($nextDate, modify: '+ '.($this->interval * $counter).' years');
                 } while (2 != $nextDate->format('n'));
 
                 $this->currentDate = $nextDate;
@@ -767,7 +775,7 @@ class RRuleIterator implements \Iterator
             }
 
             // The easiest form
-            $this->currentDate = $this->currentDate->modify('+'.($amount * $this->interval).' years');
+            $this->currentDate = $this->getNextIterationDateTime($this->currentDate, modify: '+'.($amount * $this->interval).' years');
 
             return;
         }
@@ -1229,5 +1237,104 @@ class RRuleIterator implements \Iterator
         }
 
         return $recurrenceMonths;
+    }
+
+    private function getNextIterationDateTime(\DateTimeImmutable|\DateTime $dateTime, string $modify): \DateTimeImmutable|\DateTime
+    {
+        $startTs = $dateTime->getTimestamp();
+        $initialDateTime = clone $dateTime;
+        $modifiedDateTime = $dateTime->modify($modify);
+
+        $this->detectAndSaveDstOffset(
+            $initialDateTime,
+            $modifiedDateTime,
+            $modify,
+        );
+
+        $modifiedDateTime = $this->revertPastOffset($modifiedDateTime);
+
+        return $modifiedDateTime;
+    }
+
+    private function detectAndSaveDstOffset(
+        \DateTimeImmutable|\DateTime $initialDateTime,
+        \DateTimeImmutable|\DateTime $modifiedDateTime,
+        string $modify,
+    ) {
+        $dstTransitionLeap = $this->getDstTransitionLeap($initialDateTime, $modifiedDateTime, $modify);
+        if (!is_null($dstTransitionLeap)) {
+            $this->leapOffset[$this->counter] = ($this->leapOffset[$this->counter] ?? 0) + $dstTransitionLeap;
+        }
+
+    }
+
+    private function getDstTransitionLeap(
+        \DateTimeImmutable|\DateTime $initialDateTime,
+        \DateTimeImmutable|\DateTime $modifiedDateTime,
+        string $modify,
+    ): ?int {
+        $modifiedDateInterval = $this->substractDates($modifiedDateTime, $initialDateTime);
+        $modifyInterval = \DateInterval::createFromDateString($modify);
+        $leap = $this->substractIntervals($modifiedDateInterval, $modifyInterval);
+
+        if ($this->isDstTransitionLeap($leap)) {
+            return 3_600 * $leap->h;
+        }
+
+        return null;
+    }
+
+    private function isDstTransitionLeap(\DateInterval $leap): bool
+    {
+        return $leap->y === 0 && $leap->m === 0 && $leap->d === 0 && $leap->h > 0 && $leap->i === 0 && $leap->s === 0;
+    }
+
+    private function revertPastOffset(\DateTimeImmutable|\DateTime $dateTime): \DateTimeImmutable|\DateTime
+    {
+        if (!is_numeric($this->counter)) {
+            return $dateTime;
+        }
+
+        $previousIterationLeapOffset = $this->leapOffset[$this->counter - 1] ?? null;
+
+        if (!is_int($previousIterationLeapOffset)) {
+            return $dateTime;
+        }
+
+        $modifiedDateTime =  $dateTime->modify("- $previousIterationLeapOffset seconds");
+
+        unset($this->leapOffset[$this->counter - 1]);
+
+        return $modifiedDateTime;
+    }
+
+    private function substractIntervals(\DateInterval $dateIntervalOne, \DateInterval $dateIntervalTwo): \DateInterval
+    {
+        $yearsDiff = $dateIntervalOne->y - $dateIntervalTwo->y;
+        $monthsDiff = $dateIntervalOne->m - $dateIntervalTwo->m;
+        $daysDiff = $dateIntervalOne->d - $dateIntervalTwo->d;
+        $hoursDiff = $dateIntervalOne->h - $dateIntervalTwo->h;
+        $minutesDiff = $dateIntervalOne->i - $dateIntervalTwo->i;
+        $secondsDiff = $dateIntervalOne->s - $dateIntervalTwo->s;
+
+        return \DateInterval::createFromDateString(
+            "$yearsDiff years $monthsDiff months $daysDiff days $hoursDiff hours $minutesDiff minutes $secondsDiff seconds",
+        );
+    }
+
+    private function substractDates(
+        \DateTimeImmutable|\DateTime $dateIntervalOne,
+        \DateTimeImmutable|\DateTime $dateIntervalTwo,
+    ): \DateInterval {
+        $yearsDiff = $dateIntervalOne->format('y') - $dateIntervalTwo->format('y');
+        $monthsDiff = $dateIntervalOne->format('m') - $dateIntervalTwo->format('m');
+        $daysDiff = $dateIntervalOne->format('d') - $dateIntervalTwo->format('d');
+        $hoursDiff = $dateIntervalOne->format('h') - $dateIntervalTwo->format('h');
+        $minutesDiff = $dateIntervalOne->format('i') - $dateIntervalTwo->format('i');
+        $secondsDiff = $dateIntervalOne->format('s') - $dateIntervalTwo->format('s');
+
+        return \DateInterval::createFromDateString(
+            "$yearsDiff years $monthsDiff months $daysDiff days $hoursDiff hours $minutesDiff minutes $secondsDiff seconds",
+        );
     }
 }
