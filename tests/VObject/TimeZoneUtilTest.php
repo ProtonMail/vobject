@@ -629,7 +629,7 @@ HI;
         $ics = <<<ICS
 BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//ical.marudot.com//iCal Event Maker 
+PRODID:-//ical.marudot.com//iCal Event Maker
 X-WR-CALNAME:Victorian public holiday dates
 NAME:Victorian public holiday dates
 CALSCALE:GREGORIAN
@@ -675,7 +675,7 @@ ICS;
     {
         $ics = $this->getCustomizedICS();
         $tz = TimeZoneUtil::getTimeZone('Customized Time Zone', Reader::read($ics));
-        self::assertSame('Asia/Brunei', $tz->getName());
+        self::assertSame('Antarctica/Casey', $tz->getName());
         $start = new \DateTimeImmutable('2022-04-25');
         self::assertSame(8 * 60 * 60, $tz->getOffset($start));
     }

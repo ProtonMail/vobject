@@ -54,13 +54,15 @@ class RRuleIteratorTest extends TestCase
     public function testRecurrenceWithDstTransition(string $start, array $expected): void
     {
         $this->parse(
-            rule:'FREQ=DAILY;INTERVAL=1;COUNT=5',
-            start: $start,
-            expected: $expected,
-            expectedFreq: 'daily',
-            expectedCount: 5,
-            expectedInterval: 1,
-            tz: 'Europe/Zurich',
+            'FREQ=DAILY;INTERVAL=1;COUNT=5',
+            $start,
+            $expected,
+            'daily',
+            5,
+            1,
+            null,
+            null,
+            'Europe/Zurich',
         );
     }
 
