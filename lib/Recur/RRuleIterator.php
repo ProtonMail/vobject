@@ -440,7 +440,7 @@ class RRuleIterator implements \Iterator
      */
     protected function nextHourly($amount = 1): void
     {
-        $this->currentDate = $this->getNextIterationDateTime($this->currentDate, '+'.$amount * $this->interval.' hours');
+        $this->currentDate = $this->currentDate->modify('+'.$amount * $this->interval.' hours');
     }
 
     /**
@@ -473,13 +473,13 @@ class RRuleIterator implements \Iterator
             if ($this->byHour) {
                 if ('23' == $this->currentDate->format('G')) {
                     // to obey the interval rule
-                    $this->currentDate = $this->getNextIterationDateTime($this->currentDate, '+'.(($amount * $this->interval) - 1).' days');
+                    $this->currentDate = $this->currentDate->modify('+'.(($amount * $this->interval) - 1).' days');
                     $amount = 1;
                 }
 
-                $this->currentDate = $this->getNextIterationDateTime($this->currentDate, '+1 hours');
+                $this->currentDate = $this->currentDate->modify('+1 hours');
             } else {
-                $this->currentDate = $this->getNextIterationDateTime($this->currentDate, '+'.($amount * $this->interval).' days');
+                $this->currentDate = $this->currentDate->modify('+'.($amount * $this->interval).' days');
                 $amount = 1;
             }
 
@@ -530,9 +530,9 @@ class RRuleIterator implements \Iterator
 
         do {
             if ($this->byHour) {
-                $this->currentDate = $this->getNextIterationDateTime($this->currentDate, '+1 hours');
+                $this->currentDate = $this->currentDate->modify('+1 hours');
             } else {
-                $this->currentDate = $this->getNextIterationDateTime($this->currentDate, '+1 days');
+                $this->currentDate = $this->currentDate->modify('+1 days');
             }
 
             // Current day of the week
@@ -543,12 +543,12 @@ class RRuleIterator implements \Iterator
 
             // We need to roll over to the next week
             if ($currentDay === $firstDay && (!$this->byHour || '0' == $currentHour)) {
-                $this->currentDate = $this->getNextIterationDateTime($this->currentDate, '+'.(($amount * $this->interval) - 1).' weeks');
+                $this->currentDate = $this->currentDate->modify('+'.(($amount * $this->interval) - 1).' weeks');
                 $amount = 1;
                 // We need to go to the first day of this week, but only if we
                 // are not already on this first day of this week.
                 if ($this->currentDate->format('w') != $firstDay) {
-                    $this->currentDate = $this->getNextIterationDateTime($this->currentDate, 'last '.$this->dayNames[$this->dayMap[$this->weekStart]]);
+                    $this->currentDate = $this->currentDate->modify('last '.$this->dayNames[$this->dayMap[$this->weekStart]]);
                 }
             }
 
@@ -578,7 +578,7 @@ class RRuleIterator implements \Iterator
                 do {
                     ++$increase;
                     $tempDate = clone $this->currentDate;
-                    $tempDate = $this->getNextIterationDateTime($tempDate, '+ '.($this->interval * $increase).' months');
+                    $tempDate = $tempDate->modify('+ '.($this->interval * $increase).' months');
                 } while ($tempDate->format('j') != $currentDayOfMonth);
                 $this->currentDate = $tempDate;
             }
@@ -623,7 +623,7 @@ class RRuleIterator implements \Iterator
                 1
             );
             // end of workaround
-            $this->currentDate = $this->getNextIterationDateTime($this->currentDate, '+ '.($amount * $this->interval).' months');
+            $this->currentDate = $this->currentDate->modify('+ '.($amount * $this->interval).' months');
             $amount = 1;
 
             // This goes to 0 because we need to start counting at the
@@ -684,7 +684,7 @@ class RRuleIterator implements \Iterator
                     // 400. (1800, 1900, 2100). So we just rely on the datetime
                     // functions instead.
                     $nextDate = clone $this->currentDate;
-                    $nextDate = $this->getNextIterationDateTime($nextDate, '+ '.($this->interval * $counter).' years');
+                    $nextDate = $nextDate->modify('+ '.($this->interval * $counter).' years');
                 } while (2 != $nextDate->format('n'));
 
                 $this->currentDate = $nextDate;
