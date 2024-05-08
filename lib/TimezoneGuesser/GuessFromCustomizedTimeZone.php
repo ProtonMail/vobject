@@ -45,11 +45,12 @@ class GuessFromCustomizedTimeZone implements TimezoneGuesser
         $daylightIterator = $daylight ? new RRuleIterator($daylightRRule, $standardIterator->current()) : null;
         $daylightIterator && $daylightIterator->next();
 
+        $day = 24 * 60 * 60;
         foreach ($timezones as $timezone) {
             $tz = new \DateTimeZone($timezone);
             // check standard
             $timestamp = $standardIterator->current()->getTimestamp();
-            $transitions = $tz->getTransitions($timestamp, $timestamp + 1);
+            $transitions = $tz->getTransitions($timestamp + $day, $timestamp + $day + 1);
             if (empty($transitions)) {
                 continue;
             }
@@ -66,7 +67,7 @@ class GuessFromCustomizedTimeZone implements TimezoneGuesser
 
             // check daylight
             $timestamp = $daylightIterator->current()->getTimestamp();
-            $transitions = $tz->getTransitions($timestamp, $timestamp + 1);
+            $transitions = $tz->getTransitions($timestamp + $day, $timestamp + $day + 1);
             if (empty($transitions)) {
                 continue;
             }

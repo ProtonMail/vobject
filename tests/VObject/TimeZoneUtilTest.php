@@ -671,11 +671,54 @@ ICS;
         self::assertSame(11 * 60 * 60, $tz->getOffset($start));
     }
 
+    public function testCustomizedTimeZone2(): void
+    {
+        $ics = <<<ICS
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//ical.marudot.com//iCal Event Maker 
+X-WR-CALNAME:test
+NAME:test
+CALSCALE:GREGORIAN
+BEGIN:VTIMEZONE
+TZID:Customized Time Zone
+BEGIN:STANDARD
+DTSTART:16010101T030000
+TZOFFSETFROM:+0200
+TZOFFSETTO:+0100
+RRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=-1SU;BYMONTH=10
+END:STANDARD
+BEGIN:DAYLIGHT
+DTSTART:16010101T020000
+TZOFFSETFROM:+0100
+TZOFFSETTO:+0200
+RRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=-1SU;BYMONTH=3
+END:DAYLIGHT
+END:VTIMEZONE
+BEGIN:VEVENT
+DTSTAMP:20200907T032724Z
+UID:problematicTimezone@example.com
+DTSTART;TZID=Customized Time Zone:20210611T110000
+DTEND;TZID=Customized Time Zone:20210611T113000
+SUMMARY:customized time zone
+END:VEVENT
+END:VCALENDAR
+ICS;
+
+        $tz = TimeZoneUtil::getTimeZone('Customized Time Zone', Reader::read($ics));
+        self::assertNotSame('Customized Time Zone', $tz->getName());
+        $start = new \DateTimeImmutable('2022-04-25');
+        self::assertSame(2 * 60 * 60, $tz->getOffset($start));
+
+        $start = new \DateTimeImmutable('2022-11-10');
+        self::assertSame(60 * 60, $tz->getOffset($start));
+    }
+
     public function testCustomizedTimeZoneWithoutDaylight(): void
     {
         $ics = $this->getCustomizedICS();
         $tz = TimeZoneUtil::getTimeZone('Customized Time Zone', Reader::read($ics));
-        self::assertSame('Asia/Brunei', $tz->getName());
+        self::assertSame('Antarctica/Casey', $tz->getName());
         $start = new \DateTimeImmutable('2022-04-25');
         self::assertSame(8 * 60 * 60, $tz->getOffset($start));
     }
