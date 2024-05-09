@@ -127,7 +127,7 @@ class DateTime extends Property
      *
      * @throws InvalidDataException
      */
-    public function getDateTime(\DateTimeZone $timeZone = null, bool $activeCustomizedGuesser = true): ?\DateTimeImmutable
+    public function getDateTime(?\DateTimeZone $timeZone = null, bool $activeCustomizedGuesser = true): ?\DateTimeImmutable
     {
         $dt = $this->getDateTimes($timeZone, $activeCustomizedGuesser);
         if (!$dt) {
@@ -148,7 +148,7 @@ class DateTime extends Property
      *
      * @throws InvalidDataException
      */
-    public function getDateTimes(\DateTimeZone $timeZone = null, bool $activeCustomizedGuesser = true): array
+    public function getDateTimes(?\DateTimeZone $timeZone = null, bool $activeCustomizedGuesser = true): array
     {
         // Does the property have a TZID?
         /** @var Property\FlatText $tzid */

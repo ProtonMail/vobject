@@ -282,11 +282,11 @@ class RRuleIteratorTest extends TestCase
             'FREQ=MONTHLY;INTERVAL=3;COUNT=5',
             '2011-12-05 00:00:00',
             [
-                 '2011-12-05 00:00:00',
-                 '2012-03-05 00:00:00',
-                 '2012-06-05 00:00:00',
-                 '2012-09-05 00:00:00',
-                 '2012-12-05 00:00:00',
+                '2011-12-05 00:00:00',
+                '2012-03-05 00:00:00',
+                '2012-06-05 00:00:00',
+                '2012-09-05 00:00:00',
+                '2012-12-05 00:00:00',
             ],
             'monthly', 5, 3, null
         );
@@ -1250,7 +1250,7 @@ class RRuleIteratorTest extends TestCase
         $expectedCount = null,
         $expectedInterval = null,
         $expectedUntil = null,
-        string $fastForward = null,
+        ?string $fastForward = null,
         string $tz = 'UTC',
         bool $runTillTheEnd = false,
         bool $yearlySkipUpperLimit = true
