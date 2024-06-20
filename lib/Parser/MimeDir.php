@@ -355,7 +355,7 @@ class MimeDir extends Parser
             |
             (?<=:)(?P<propValue> .+)$                      # property value
             |
-            ;(?P<paramName> [$paramNameToken]+) (?=[=;:])  # parameter name
+            ;(\ )*(?P<paramName> [$paramNameToken]+) (?=[=;:])  # parameter name
             |
             (=|,)(?P<paramValue>                           # parameter value
                 (?: [$safeChar]*) |

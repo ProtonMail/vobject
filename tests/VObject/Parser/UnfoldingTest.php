@@ -69,6 +69,30 @@ ICS;
         (new MimeDir())->parse($vcard);
     }
 
+    public function testSpaceAfterPropertyName()
+    {
+        $vcal = <<<ICS
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Proton AG//AndroidCalendar 2.0.2//EN
+BEGIN:VEVENT
+UID:15a8d460-bc67-4a1c-8f7b-a8a4108aacd3
+CREATED:20220610T111151Z
+LAST-MODIFIED:20220610T111151Z
+DTSTAMP:20220610T111151Z
+DTSTART:20220613T062500Z
+DTEND:20220613T063000Z
+SEQUENCE:0
+ORGANIZER; CN=Plannert:mailto:noreply@sho.nl
+END:VEVENT
+END:VCALENDAR
+ICS;
+
+        $vcal = (new MimeDir())->parse($vcal, Reader::OPTION_FIX_UNFOLDING);
+        $this->assertSame(0, $vcal->VEVENT->SEQUENCE->getValue());
+        $this->assertSame('mailto:noreply@sho.nl', $vcal->VEVENT->ORGANIZER->getValue());
+    }
+
     public function testNotFixUnknownProperty()
     {
         $vcard = <<<ICS
