@@ -16,6 +16,23 @@
  * @license http://sabre.io/license/ Modified BSD License
  */
 return [
+    // Moved to backward in 2021b
+    'Pacific/Enderbury',
+    // Moved to backward in 2022b
+    'Europe/Kiev',
+    // Moved to backward in 2022d
+    'Europe/Uzhgorod',
+    'Europe/Zaporozhye',
+    // Moved to backward in 2022f
+    'America/Thunder_Bay',
+    'America/Nipigon',
+    'America/Rainy_River',
+    // Moved to backward in 2022g
+    'America/Pangnirtung',
+    // Moved to backward in 2023a
+    'America/Yellowknife',
+
+    // Original list
     'Africa/Asmera',
     'Africa/Timbuktu',
     'America/Argentina/ComodRivadavia',

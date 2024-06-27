@@ -20,6 +20,10 @@ class GuessFromLicEntry implements TimezoneGuesser
 
         $lic = (string) $vtimezone->{'X-LIC-LOCATION'};
 
+        if ('Customized Time Zone' === $lic) {
+            return null;
+        }
+
         // Libical generators may specify strings like
         // "SystemV/EST5EDT". For those we must remove the
         // SystemV part.

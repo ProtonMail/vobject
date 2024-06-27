@@ -34,7 +34,8 @@ class TimeZoneUtilTest extends TestCase
             include __DIR__.'/../../lib/timezonedata/windowszones.php',
             include __DIR__.'/../../lib/timezonedata/lotuszones.php',
             include __DIR__.'/../../lib/timezonedata/exchangezones.php',
-            include __DIR__.'/../../lib/timezonedata/php-workaround.php'
+            include __DIR__.'/../../lib/timezonedata/php-workaround.php',
+            include __DIR__.'/../../lib/timezonedata/extrazones.php',
         );
 
         // PHPUNit requires an array of arrays
@@ -44,6 +45,17 @@ class TimeZoneUtilTest extends TestCase
             },
             $map
         );
+    }
+
+    /**
+     * @dataProvider getMapping
+     */
+    public function testSlashTZ($timezonename): void
+    {
+        $slashTimezone = '/'.$timezonename;
+        $expected = TimeZoneUtil::getTimeZone($timezonename)->getName();
+        $actual = TimeZoneUtil::getTimeZone($slashTimezone)->getName();
+        self::assertEquals($expected, $actual);
     }
 
     public function testExchangeMap(): void
@@ -165,6 +177,29 @@ HI;
         self::assertEquals($ex->getName(), $tz->getName());
     }
 
+    public function testLowerCaseTimeZone(): void
+    {
+        $tz = TimeZoneUtil::getTimeZone('mountain time (us & canada)');
+        $ex = new \DateTimeZone('America/Denver');
+        self::assertEquals($ex->getName(), $tz->getName());
+    }
+
+    public function testDeprecatedTimeZone(): void
+    {
+        // Deprecated in 2022b
+        $tz = TimeZoneUtil::getTimeZone('Europe/Kiev');
+        $ex = new \DateTimeZone('Europe/Kiev');
+        self::assertSame($ex->getName(), $tz->getName());
+    }
+
+    public function testDeprecatedUnsupportedTimeZone(): void
+    {
+        // Deprecated and unsupported
+        $tz = TimeZoneUtil::getTimeZone('America/Godthab');
+        $ex = new \DateTimeZone('America/Godthab');
+        self::assertNotSame($ex->getName(), $tz->getName());
+    }
+
     /**
      * @dataProvider getPHPTimeZoneIdentifiers
      */
@@ -205,7 +240,10 @@ HI;
             function ($value) {
                 return [$value];
             },
-            \DateTimeZone::listIdentifiers()
+            // FIXME remove the filter after finishing timezone migration
+            array_filter(\DateTimeZone::listIdentifiers(), static function (string $timezone) {
+                return 'Europe/Kyiv' !== $timezone;
+            })
         );
     }
 
@@ -218,6 +256,11 @@ HI;
             },
             include __DIR__.'/../../lib/timezonedata/php-bc.php'
         );
+    }
+
+    public function testKyivTimezone(): void
+    {
+        self::assertSame('Europe/Kiev', TimeZoneUtil::getTimeZone('Europe/Kyiv')->getName());
     }
 
     public function testTimezoneOffset(): void
@@ -234,7 +277,7 @@ HI;
 
     public function testTimezoneFail(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        self::expectException(\InvalidArgumentException::class);
         TimeZoneUtil::getTimeZone('FooBar', null, true);
     }
 
@@ -375,5 +418,347 @@ HI;
         $tz = TimeZoneUtil::getTimeZone('(UTC-05:00) Eastern Time (US & Canada)');
         $ex = new \DateTimeZone('America/New_York');
         self::assertEquals($ex->getName(), $tz->getName());
+    }
+
+    public function testMicrosoftMap(): void
+    {
+        $tz = TimeZoneUtil::getTimeZone('tzone://Microsoft/Utc', null, true);
+        $ex = new \DateTimeZone('UTC');
+        self::assertEquals($ex->getName(), $tz->getName());
+    }
+
+    /**
+     * @dataProvider unSupportTimezoneProvider
+     */
+    public function testPHPUnSupportTimeZone(string $origin, string $expected): void
+    {
+        $tz = TimeZoneUtil::getTimeZone($origin, null, true);
+        $ex = new \DateTimeZone($expected);
+        self::assertEquals($ex->getName(), $tz->getName());
+    }
+
+    public function unSupportTimezoneProvider(): iterable
+    {
+        yield 'America/Santa_Isabel' => [
+            'origin' => 'America/Santa_Isabel',
+            'expected' => 'America/Tijuana',
+        ];
+
+        yield 'Asia/Chongqing' => [
+            'origin' => 'Asia/Chongqing',
+            'expected' => 'Asia/Shanghai',
+        ];
+
+        yield 'Asia/Harbin' => [
+            'origin' => 'Asia/Harbin',
+            'expected' => 'Asia/Shanghai',
+        ];
+
+        yield 'Asia/Kashgar' => [
+            'origin' => 'Asia/Kashgar',
+            'expected' => 'Asia/Urumqi',
+        ];
+
+        yield 'Pacific/Johnston' => [
+            'origin' => 'Pacific/Johnston',
+            'expected' => 'Pacific/Honolulu',
+        ];
+
+        yield 'EDT' => [
+            'origin' => 'EDT',
+            'expected' => 'America/Manaus',
+        ];
+
+        yield 'CDT' => [
+            'origin' => 'CDT',
+            'expected' => 'America/Chicago',
+        ];
+
+        yield 'PST' => [
+            'origin' => 'PST',
+            'expected' => 'America/Los_Angeles',
+        ];
+
+        yield 'Gulf Standard Time' => [
+            'origin' => 'Gulf Standard Time',
+            'expected' => 'Asia/Dubai',
+        ];
+
+        if (($handle = fopen(__DIR__.'/microsoft-timezones-confluence.csv', 'r')) !== false) {
+            $data = fgetcsv($handle);
+            while (($data = fgetcsv($handle)) !== false) {
+                yield $data[0] => [
+                    'origin' => $data[0],
+                    'expected' => '' !== $data[2] ? $data[2] : $data[1],
+                ];
+            }
+            fclose($handle);
+        }
+    }
+
+    /**
+     * @dataProvider offsetTimeZoneProvider
+     */
+    public function testOffsetTimeZones(string $origin, string $expected): void
+    {
+        $tz = TimeZoneUtil::getTimeZone($origin, null, true);
+        $ex = new \DateTimeZone($expected);
+        self::assertEquals($ex->getName(), $tz->getName());
+    }
+
+    public function offsetTimeZoneProvider(): iterable
+    {
+        yield 'UTC-05:00' => [
+            'origin' => 'UTC-05:00',
+            'expected' => 'America/Lima',
+        ];
+
+        yield '-5' => [
+            'origin' => '-5',
+            'expected' => 'America/Lima',
+        ];
+
+        yield '-05' => [
+            'origin' => '-05',
+            'expected' => 'America/Lima',
+        ];
+
+        yield '-05:00' => [
+            'origin' => '-05:00',
+            'expected' => 'America/Lima',
+        ];
+    }
+
+    /**
+     * @dataProvider letterCaseTimeZoneProvider
+     */
+    public function testDifferentLetterCaseTimeZone(string $origin, string $expected): void
+    {
+        $tz = TimeZoneUtil::getTimeZone($origin, null, true);
+        $ex = new \DateTimeZone($expected);
+        self::assertEquals($ex->getName(), $tz->getName());
+    }
+
+    public function letterCaseTimeZoneProvider(): iterable
+    {
+        yield 'case 1' => [
+            'origin' => 'Europe/paris',
+            'expected' => 'Europe/Paris',
+        ];
+
+        yield 'case 2' => [
+            'origin' => 'europe/paris',
+            'expected' => 'Europe/Paris',
+        ];
+
+        yield 'case 3' => [
+            'origin' => 'Europe/pAris',
+            'expected' => 'Europe/Paris',
+        ];
+
+        yield 'case 4' => [
+            'origin' => 'Asia/taipei',
+            'expected' => 'Asia/Taipei',
+        ];
+    }
+
+    /**
+     * @dataProvider outlookCitiesProvider
+     */
+    public function testOutlookCities(string $origin, bool $failIfUncertain, string $expected): void
+    {
+        $tz = TimeZoneUtil::getTimeZone($origin, null, $failIfUncertain);
+        $ex = new \DateTimeZone($expected);
+        self::assertEquals($ex->getName(), $tz->getName());
+    }
+
+    public function outlookCitiesProvider(): iterable
+    {
+        yield 'case 1' => [
+            'origin' => 'TZID:(UTC+01:00) Bruxelles\, København\, Madrid\, Paris',
+            'failIfUncertain' => true,
+            'expected' => 'Europe/Madrid',
+        ];
+
+        yield 'case 2' => [
+            'origin' => 'TZID:(UTC+01:00) Bruxelles, København, Madrid, Paris',
+            'failIfUncertain' => true,
+            'expected' => 'Europe/Madrid',
+        ];
+
+        yield 'case 3' => [
+            'origin' => 'TZID:(UTC+01:00)Bruxelles\, København\, Madrid\, Paris',
+            'failIfUncertain' => true,
+            'expected' => 'Europe/Madrid',
+        ];
+
+        yield 'case 4' => [
+            'origin' => 'Bruxelles\, København\, Madrid\, Paris',
+            'failIfUncertain' => false,
+            'expected' => 'UTC',
+        ];
+    }
+
+    /**
+     * @dataProvider versionTzProvider
+     */
+    public function testVersionTz(string $origin, bool $failIfUncertain, string $expected): void
+    {
+        $tz = TimeZoneUtil::getTimeZone($origin, null, $failIfUncertain);
+        $ex = new \DateTimeZone($expected);
+        self::assertEquals($ex->getName(), $tz->getName());
+    }
+
+    public function versionTzProvider(): iterable
+    {
+        yield 'case 1' => [
+            'origin' => 'Eastern Standard Time 1',
+            'failIfUncertain' => true,
+            'expected' => 'America/New_York',
+        ];
+
+        yield 'case 2' => [
+            'origin' => 'Eastern Standard Time 2',
+            'failIfUncertain' => true,
+            'expected' => 'America/New_York',
+        ];
+    }
+
+    public function testCustomizedTimeZone(): void
+    {
+        $ics = <<<ICS
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//ical.marudot.com//iCal Event Maker 
+X-WR-CALNAME:Victorian public holiday dates
+NAME:Victorian public holiday dates
+CALSCALE:GREGORIAN
+BEGIN:VTIMEZONE
+TZID:Customized Time Zone
+TZURL:http://tzurl.org/zoneinfo-outlook/Australia/Sydney
+X-LIC-LOCATION:Customized Time Zone
+BEGIN:STANDARD
+TZOFFSETFROM:+1100
+TZOFFSETTO:+1000
+TZNAME:AEST
+DTSTART:19700405T030000
+RRULE:FREQ=YEARLY;BYMONTH=4;BYDAY=1SU
+END:STANDARD
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+1000
+TZOFFSETTO:+1100
+TZNAME:AEDT
+DTSTART:19701004T020000
+RRULE:FREQ=YEARLY;BYMONTH=10;BYDAY=1SU
+END:DAYLIGHT
+END:VTIMEZONE
+BEGIN:VEVENT
+DTSTAMP:20200907T032724Z
+UID:problematicTimezone@example.com
+DTSTART;TZID=Customized Time Zone:20210611T110000
+DTEND;TZID=Customized Time Zone:20210611T113000
+SUMMARY:customized time zone
+END:VEVENT
+END:VCALENDAR
+ICS;
+
+        $tz = TimeZoneUtil::getTimeZone('Customized Time Zone', Reader::read($ics));
+        self::assertNotSame('Customized Time Zone', $tz->getName());
+        $start = new \DateTimeImmutable('2022-04-25');
+        self::assertSame(10 * 60 * 60, $tz->getOffset($start));
+
+        $start = new \DateTimeImmutable('2022-11-10');
+        self::assertSame(11 * 60 * 60, $tz->getOffset($start));
+    }
+
+    public function testCustomizedTimeZone2(): void
+    {
+        $ics = <<<ICS
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//ical.marudot.com//iCal Event Maker 
+X-WR-CALNAME:test
+NAME:test
+CALSCALE:GREGORIAN
+BEGIN:VTIMEZONE
+TZID:Customized Time Zone
+BEGIN:STANDARD
+DTSTART:16010101T030000
+TZOFFSETFROM:+0200
+TZOFFSETTO:+0100
+RRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=-1SU;BYMONTH=10
+END:STANDARD
+BEGIN:DAYLIGHT
+DTSTART:16010101T020000
+TZOFFSETFROM:+0100
+TZOFFSETTO:+0200
+RRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=-1SU;BYMONTH=3
+END:DAYLIGHT
+END:VTIMEZONE
+BEGIN:VEVENT
+DTSTAMP:20200907T032724Z
+UID:problematicTimezone@example.com
+DTSTART;TZID=Customized Time Zone:20210611T110000
+DTEND;TZID=Customized Time Zone:20210611T113000
+SUMMARY:customized time zone
+END:VEVENT
+END:VCALENDAR
+ICS;
+
+        $tz = TimeZoneUtil::getTimeZone('Customized Time Zone', Reader::read($ics));
+        self::assertNotSame('Customized Time Zone', $tz->getName());
+        $start = new \DateTimeImmutable('2022-04-25');
+        self::assertSame(2 * 60 * 60, $tz->getOffset($start));
+
+        $start = new \DateTimeImmutable('2022-11-10');
+        self::assertSame(60 * 60, $tz->getOffset($start));
+    }
+
+    public function testCustomizedTimeZoneWithoutDaylight(): void
+    {
+        $ics = $this->getCustomizedICS();
+        $tz = TimeZoneUtil::getTimeZone('Customized Time Zone', Reader::read($ics));
+        self::assertSame('Antarctica/Casey', $tz->getName());
+        $start = new \DateTimeImmutable('2022-04-25');
+        self::assertSame(8 * 60 * 60, $tz->getOffset($start));
+    }
+
+    public function testCustomizedTimeZoneFlag(): void
+    {
+        self::expectException(\InvalidArgumentException::class);
+        $ics = $this->getCustomizedICS();
+        $vobject = Reader::read($ics);
+        $vobject->VEVENT->DTSTART->getDateTime(null, false);
+    }
+
+    private function getCustomizedICS(): string
+    {
+        return <<<ICS
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//ical.marudot.com//iCal Event Maker
+X-WR-CALNAME:Victorian public holiday dates
+NAME:Victorian public holiday dates
+CALSCALE:GREGORIAN
+BEGIN:VTIMEZONE
+TZID:Customized Time Zone
+LAST-MODIFIED:20211207T194144Z
+X-LIC-LOCATION:Customized Time Zone
+BEGIN:STANDARD
+TZNAME:CST
+TZOFFSETFROM:+0800
+TZOFFSETTO:+0800
+DTSTART:19700101T000000
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+DTSTAMP:20200907T032724Z
+UID:problematicTimezone@example.com
+DTSTART;TZID=Customized Time Zone:20210611T110000
+DTEND;TZID=Customized Time Zone:20210611T113000
+SUMMARY:customized time zone
+END:VEVENT
+END:VCALENDAR
+ICS;
     }
 }

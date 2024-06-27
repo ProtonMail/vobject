@@ -71,7 +71,7 @@ return [
     'Mid-Atlantic' => 'America/Noronha',
     'Brasilia' => 'America/Sao_Paulo', // Best guess
     'Buenos Aires' => 'America/Argentina/Buenos_Aires',
-    'Greenland' => 'America/Godthab',
+    'Greenland' => 'Atlantic/Stanley',
     'Newfoundland' => 'America/St_Johns',
     'Atlantic Time (Canada)' => 'America/Halifax',
     'Caracas, La Paz' => 'America/Caracas',
@@ -91,4 +91,7 @@ return [
     'Hawaii' => 'Pacific/Honolulu',
     'Midway Island, Samoa' => 'Pacific/Midway',
     'Eniwetok, Kwajalein, Dateline Time' => 'Pacific/Kwajalein',
+
+    // Localized timezones
+    'Amsterdam, Berlin, Berne, Rome, Stockholm, Vienne' => 'Europe/Berlin',
 ];

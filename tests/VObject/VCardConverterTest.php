@@ -284,7 +284,7 @@ OUT;
     /**
      * @throws InvalidDataException
      */
-    public function testBDAYConversion()
+    public function testBDAYConversion(): void
     {
         $input = <<<IN
 BEGIN:VCARD
@@ -362,7 +362,7 @@ IN;
     /**
      * @throws InvalidDataException
      */
-    public function testUnknownTargetVCardVersion()
+    public function testUnknownTargetVCardVersion(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $input = <<<IN
@@ -554,7 +554,7 @@ VCF;
 
         $vcard = Reader::read($input);
 
-        self::assertInstanceOf(Component\VCard::class, $vcard);
+        self::assertInstanceOf(VCard::class, $vcard);
         /** @var VCard $vcard */
         $vcard = $vcard->convert(Document::VCARD40);
         $vcard = $vcard->serialize();
@@ -608,7 +608,7 @@ VCF;
         $vcard = Reader::read($input);
         $vcard = $vcard->convert(Document::VCARD40);
 
-        self::assertVObjectEqualsVObject(
+        $this->assertVObjectEqualsVObject(
             $output,
             $vcard
         );

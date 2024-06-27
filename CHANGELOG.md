@@ -1,6 +1,165 @@
 ChangeLog
 =========
 
+4.30.0 (2024-05-09)
+* #103 Fix customized timezone guesser
+
+4.29.0 (2023-12-29)
+-------------------
+* #98 Chore/merge upstream master 20231228
+
+4.28.0 (2023-12-19)
+-------------------
+* #96 use dubai instead of muscat
+
+4.27.0 (2023-12-18)
+-------------------
+* #94 Add support for gulf standard time
+
+4.26.0 (2023-11-30)
+-------------------
+* #92 Drop malformed or illegal VALUE parameter
+
+4.25.0 (2023-06-26)
+-------------------
+* #89 Move America/Yellowknife to deprecated
+
+4.24.0 (2023-06-19)
+-------------------
+* #87 Added whitelist for illegal values in parameter
+
+4.23.0 (2023-04-13)
+-------------------
+* #82 Modify TZID value for migration timezones 
+
+4.22.0 (2023-03-01)
+-------------------
+* #80 Allow newly deprecated timezones
+
+4.21.0 (2022-12-28)
+-------------------
+* #76 Add mapping for PST timezone
+
+4.20.0 (2022-12-23)
+-------------------
+* #74 Handle null tzid
+
+4.19.0 (2022-12-21)
+-------------------
+* #72 Deprecate Enderbury timezone
+
+4.18.0 (2022-09-01)
+-------------------
+* #69 Add mapping for CDT timezone
+
+4.17.0 (2022-07-29)
+-------------------
+* #65 [Calendar] Replace Godthab timezone 
+
+4.16.0 (2022-07-06)
+-------------------
+* #63 Fix customized timezone guesser
+
+4.15.0 (2022-06-23)
+-------------------
+* #57 Handle customized timezone
+
+4.14.0 (2022-05-31)
+-------------------
+* #54 Add FindFromOffsetName 
+
+4.13.0 (2022-05-27)
+-------------------
+* #56 Merge upstream changes from sabre-io/vobject@a595790 into protonlabs/vobject
+* #58 Handle version timezone
+
+4.12.0 (2022-05-05)
+-------------------
+* #52 Add FindFromOutlookCities timezone finder 
+
+4.11.0 (2022-04-22)
+-------------------
+* #50 Add lowercase timezone finder 
+
+4.10.0 (2022-03-08)
+-------------------
+* #48 Block invalid combinations of FREQ with BY rules
+
+4.9.0 (2022-02-15)
+------------------
+* #46 Add support UTC-05:00 timezone 
+
+4.8.0 (2022-02-10)
+------------------
+* #42 Add option to fix unfolding issues in ICS
+
+4.7.2 (2022-01-21)
+------------------
+* #41 Add missing microsoft timezones and test with confluence file
+
+4.7.1 (2022-01-10)
+------------------
+* #39 Add support for lowercase timezones
+
+4.7.0 (2021-12-15)
+------------------
+* #34 Merge upstream changes from sabre-io/vobject:4.4.0 into protonlabs/vobject
+* #36 Merge upstream changes from sabre-io/vobject:4.4.1 into protonlabs/vobject
+
+4.6.1 (2021-11-04)
+------------------
+* #29 Fix timezone name prefixed with /
+* #30 Missing EDT TZID conversion
+
+4.5.1 (2021-10-11)
+------------------
+* #25 Fix duplicate value
+* #26 Add php unsupport timezone
+
+4.4.2 (2021-07-15)
+------------------
+* #23 Add microsoft timezone map
+
+4.4.1 (2021-01-18)
+------------------
+* #19 Validate count and until property
+
+4.4.0 (2020-11-23)
+------------------
+
+* #18 Merge upstream changes from sabre-io/vobject:4.3.3 into protonlabs/vobject
+* #17 Throw exception when getting invalid timezone
+
+4.3.4 (2020-07-27)
+------------------
+
+* #16 Merge upstream changes from sabre-io/vobject:4.3.1 into protonlabs/vobject
+
+4.3.3 (2020-07-22)
+------------------
+
+* #15 Expose RRULE properties
+
+4.3.2 (2020-05-20)
+------------------
+
+* #14 Add timezones data mapping.
+
+4.3.1 (2020-01-27)
+------------------
+
+* #6 Add FastForward Before
+* #7 Add FastForward to end
+* #11 FREQ is mandatory in the RRule
+* #12 Validate BYMONTHDAY
+
+4.2.1 (2019-09-10)
+------------------
+
+* #2 Fix bug in by year day
+* #3 Add daily occurrences to nextMonth and NextYear
+* #4 Enhance fast forward speed if no count value has been given
+
 4.5.2 (2023-01-20)
 ------------------
 

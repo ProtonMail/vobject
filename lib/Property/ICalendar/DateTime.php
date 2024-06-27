@@ -2,7 +2,6 @@
 
 namespace Sabre\VObject\Property\ICalendar;
 
-use DateTimeZone;
 use Sabre\VObject\DateTimeParser;
 use Sabre\VObject\InvalidDataException;
 use Sabre\VObject\Property;
@@ -128,9 +127,9 @@ class DateTime extends Property
      *
      * @throws InvalidDataException
      */
-    public function getDateTime(\DateTimeZone $timeZone = null): ?\DateTimeImmutable
+    public function getDateTime(?\DateTimeZone $timeZone = null, bool $activeCustomizedGuesser = true): ?\DateTimeImmutable
     {
-        $dt = $this->getDateTimes($timeZone);
+        $dt = $this->getDateTimes($timeZone, $activeCustomizedGuesser);
         if (!$dt) {
             return null;
         }
@@ -149,14 +148,14 @@ class DateTime extends Property
      *
      * @throws InvalidDataException
      */
-    public function getDateTimes(\DateTimeZone $timeZone = null): array
+    public function getDateTimes(?\DateTimeZone $timeZone = null, bool $activeCustomizedGuesser = true): array
     {
         // Does the property have a TZID?
         /** @var Property\FlatText $tzid */
         $tzid = $this['TZID'];
 
         if ($tzid) {
-            $timeZone = TimeZoneUtil::getTimeZone((string) $tzid, $this->root);
+            $timeZone = TimeZoneUtil::getTimeZone((string) $tzid, $this->root, true, $activeCustomizedGuesser);
         }
 
         $dts = [];

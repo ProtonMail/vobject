@@ -46,6 +46,7 @@ class Parameter extends Node
      */
     public function __construct(Document $root, ?string $name, $value = null)
     {
+        $this->name = is_null($name) ? '' : strtoupper($name);
         $this->root = $root;
         if (is_null($name)) {
             $this->noName = true;
