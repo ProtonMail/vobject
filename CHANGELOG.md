@@ -1,5 +1,7 @@
 ChangeLog
 =========
+4.31.0 (2024-06-28)
+* #106 Merge upstream master 2024-06-27
 
 4.30.0 (2024-05-09)
 * #103 Fix customized timezone guesser
