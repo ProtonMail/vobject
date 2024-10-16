@@ -184,11 +184,11 @@ gilbert islands,Pacific/Tarawa,Pacific/Tarawa,FALSE
 gmt,Europe/London,Europe/London,FALSE
 gmt standard time,Europe/London,Europe/London,FALSE
 goose bay,America/Goose_Bay,America/Goose_Bay,FALSE
-greenland,Atlantic/Stanley,Atlantic/Stanley,FALSE
+greenland,America/Scoresbysund,America/Scoresbysund,FALSE
 greenland central,America/Scoresbysund,America/Scoresbysund,FALSE
 greenland eastern,America/Scoresbysund,America/Scoresbysund,FALSE
-greenland standard time,Atlantic/Stanley,Atlantic/Stanley,FALSE
-greenland western,Atlantic/Stanley,Atlantic/Stanley,FALSE
+greenland standard time,America/Scoresbysund,America/Scoresbysund,FALSE
+greenland western,America/Scoresbysund,America/Scoresbysund,FALSE
 greenwich,Atlantic/Reykjavik,Atlantic/Reykjavik,FALSE
 "greenwich mean time; dublin, edinburgh, london",Europe/London,Europe/London,FALSE
 "greenwich mean time: dublin, edinburgh, lisbon, london",Europe/Lisbon,Europe/Lisbon,FALSE
