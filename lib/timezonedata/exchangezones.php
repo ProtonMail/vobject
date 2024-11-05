@@ -16,6 +16,7 @@ return [
     'Casablanca, Monrovia' => 'Africa/Casablanca',
     'Greenwich Mean Time: Dublin, Edinburgh, Lisbon, London' => 'Europe/Lisbon',
     'Greenwich Mean Time; Dublin, Edinburgh, London' => 'Europe/London',
+    'Amsterdam, Belgrade, Berlin, Brussels, Budapest, Madrid, Paris, Prague, Stockholm' => 'Europe/Berlin',
     'Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna' => 'Europe/Berlin',
     'Belgrade, Pozsony, Budapest, Ljubljana, Prague' => 'Europe/Prague',
     'Brussels, Copenhagen, Madrid, Paris' => 'Europe/Paris',
