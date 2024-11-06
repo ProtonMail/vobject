@@ -1,9 +1,17 @@
 ChangeLog
 =========
+
+4.32.0 (2024-11-06)
+-------------------
+* #109 Throw InvalidDataException when finding invalid RRULE part
+* #110 Add support for a new CET TZ name
+
 4.31.0 (2024-06-28)
+-------------------
 * #106 Merge upstream master 2024-06-27
 
 4.30.0 (2024-05-09)
+-------------------
 * #103 Fix customized timezone guesser
 
 4.29.0 (2023-12-29)
