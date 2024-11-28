@@ -96,4 +96,31 @@ ICS;
 
         $this->assertNotNull($vcard->children()[0]->CONFERENCE->getValue());
     }
+
+    public function testRemoveEmptySpaceAfterColon(): void
+    {
+        $vcard = <<<ICS
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Proton AG//AndroidCalendar 2.11.20//EN
+BEGIN:VEVENT
+SEQUENCE:0
+ORGANIZER; CN=Plannert:mailto:noreply@sho.nl
+END:VEVENT
+END:VCALENDAR
+ICS;
+
+        $vcard = (new MimeDir())->parse($vcard, Reader::OPTION_FIX_UNFOLDING | Reader::OPTION_FORGIVING);
+
+
+        $this->assertSame(
+            0,
+            $vcard->VEVENT->SEQUENCE->getValue()
+        );
+
+        $this->assertSame(
+            'ORGANIZER;CN=Plannert:mailto:noreply@sho.nl' . "\r\n",
+            $vcard->VEVENT->ORGANIZER->serialize()
+        );
+    }
 }
