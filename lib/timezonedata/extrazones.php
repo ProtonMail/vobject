@@ -205,4 +205,5 @@ return [
     'CDT' => 'America/Chicago',
     'PST' => 'America/Los_Angeles',
     'Gulf Standard Time' => 'Asia/Dubai',
+    'Western/Central Europe' => 'Europe/Prague',
 ];
