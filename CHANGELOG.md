@@ -1,7 +1,12 @@
 ChangeLog
 =========
 
+4.34.0 (2025-07-23)
+-------------------
+* #114 Convert 'Western/Central Europe' tz to 'Europe/Prague'
+
 4.33.0 (2024-11-14)
+-------------------
 * #112 Fix timezone alias
 
 4.32.0 (2024-11-06)
