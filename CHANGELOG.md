@@ -1,6 +1,14 @@
 ChangeLog
 =========
 
+5.0.0 (2026-09-30)
+------------------
+* #118 Merge upstream sabre-io/vobject 5.0.0
+
+This major release requires PHP 8.2 or higher and declares parameter and
+return types across the codebase. Callers must pass the correct types.
+Stay on 4.35.x until your project runs PHP 8.2+.
+
 4.35.0 (2026-09-30)
 -------------------
 * #116 Merge upstream master 2026-05-31 (4.6.0)
