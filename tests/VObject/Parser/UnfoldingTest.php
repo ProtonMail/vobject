@@ -36,7 +36,7 @@ ICS;
         $mimeDir = new MimeDir();
         $vcard = $mimeDir->parse($vcard, Reader::OPTION_FIX_UNFOLDING);
 
-        $this->assertNotNull($vcard->children()[0]->{'X-APPLE-STRUCTURED-LOCATION'}->getValue());
+        self::assertNotNull($vcard->children()[0]->{'X-APPLE-STRUCTURED-LOCATION'}->getValue());
     }
 
     public function testNotFixUnfolding()
@@ -94,6 +94,6 @@ ICS;
 
         $vcard = (new MimeDir())->parse($vcard);
 
-        $this->assertNotNull($vcard->children()[0]->CONFERENCE->getValue());
+        self::assertNotNull($vcard->children()[0]->CONFERENCE->getValue());
     }
 }

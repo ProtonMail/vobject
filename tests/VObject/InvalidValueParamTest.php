@@ -26,7 +26,7 @@ class InvalidValueParamTest extends TestCase
             ICS;
 
         $doc = Reader::read($event);
-        $this->assertEquals("LOCATION:EXAMPLE\r\n", $doc->VEVENT->LOCATION->serialize());
+        self::assertEquals("LOCATION:EXAMPLE\r\n", $doc->VEVENT->LOCATION->serialize());
     }
 
     public function testInvalidValue()
@@ -49,6 +49,6 @@ class InvalidValueParamTest extends TestCase
             ICS;
 
         $doc = Reader::read($event);
-        $this->assertEquals("LOCATION:consectetur adipiscing elit\,sed do eiusmod tempor\r\n", $doc->VEVENT->LOCATION->serialize());
+        self::assertEquals("LOCATION:consectetur adipiscing elit\,sed do eiusmod tempor\r\n", $doc->VEVENT->LOCATION->serialize());
     }
 }

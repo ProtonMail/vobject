@@ -28,8 +28,6 @@ class RRuleIterator implements \Iterator
      */
     public const dateUpperLimit = 253402300799;
 
-    private bool $yearlySkipUpperLimit;
-
     /**
      * Creates the Iterator.
      *
@@ -42,11 +40,10 @@ class RRuleIterator implements \Iterator
      *
      * All calculations are based on this initial date.
      */
-        protected \DateTimeInterface $startDate, bool $yearlySkipUpperLimit = true)
+        protected \DateTimeInterface $startDate, private readonly bool $yearlySkipUpperLimit = true)
     {
         $this->parseRRule($rrule);
         $this->currentDate = clone $this->startDate;
-        $this->yearlySkipUpperLimit = $yearlySkipUpperLimit;
     }
 
     /* Implementation of the Iterator interface {{{ */
@@ -229,27 +226,14 @@ class RRuleIterator implements \Iterator
      */
     private function getFrequencyCoeff()
     {
-        $frequencyCoeff = null;
-
-        switch ($this->frequency) {
-            case 'hourly':
-                $frequencyCoeff = 1 / 24;
-                break;
-            case 'daily':
-                $frequencyCoeff = 1;
-                break;
-            case 'weekly':
-                $frequencyCoeff = 7;
-                break;
-            case 'monthly':
-                $frequencyCoeff = 30;
-                break;
-            case 'yearly':
-                $frequencyCoeff = 365;
-                break;
-        }
-
-        return $frequencyCoeff;
+        return match ($this->frequency) {
+            'hourly' => 1 / 24,
+            'daily' => 1,
+            'weekly' => 7,
+            'monthly' => 30,
+            'yearly' => 365,
+            default => null,
+        };
     }
 
     /**
@@ -299,6 +283,18 @@ class RRuleIterator implements \Iterator
         if ($this->currentDate >= $dt) {
             $this->rewind();
         }
+    }
+
+    /**
+     * Falls back to the current value when the BYSECOND, BYMINUTE or BYHOUR rule part is absent.
+     *
+     * @param array<int, int|string>|null $ruleValues
+     *
+     * @return array<int, int|string>
+     */
+    private function ruleValuesOrCurrent(?array $ruleValues, int $current): array
+    {
+        return null === $ruleValues || [] === $ruleValues ? [$current] : $ruleValues;
     }
 
     /**
@@ -1168,19 +1164,8 @@ class RRuleIterator implements \Iterator
 
         $result = $this->addDailyOccurences($result);
         $result = array_unique($result, SORT_REGULAR);
-        $sortLex = function ($a, $b) {
-            if ($a[0] != $b[0]) {
-                return $a[0] - $b[0];
-            }
-            if ($a[1] != $b[1]) {
-                return $a[1] - $b[1];
-            }
-            if ($a[2] != $b[2]) {
-                return $a[2] - $b[2];
-            }
-
-            return $a[3] - $b[3];
-        };
+        // BYHOUR/BYMINUTE/BYSECOND values are numeric strings, so compare the tuples as integers.
+        $sortLex = static fn (array $a, array $b): int => array_map(intval(...), $a) <=> array_map(intval(...), $b);
         usort($result, $sortLex);
 
         // The last thing that needs checking is the BYSETPOS. If it's set, it
@@ -1218,9 +1203,9 @@ class RRuleIterator implements \Iterator
         $minute = (int) $this->currentDate->format('i');
         $second = (int) $this->currentDate->format('s');
         foreach ($result as $day) {
-            $seconds = $this->bySecond ? $this->bySecond : [$second];
-            $minutes = $this->byMinute ? $this->byMinute : [$minute];
-            $hours = $this->byHour ? $this->byHour : [$hour];
+            $seconds = $this->ruleValuesOrCurrent($this->bySecond, $second);
+            $minutes = $this->ruleValuesOrCurrent($this->byMinute, $minute);
+            $hours = $this->ruleValuesOrCurrent($this->byHour, $hour);
             foreach ($hours as $h) {
                 foreach ($minutes as $m) {
                     foreach ($seconds as $s) {

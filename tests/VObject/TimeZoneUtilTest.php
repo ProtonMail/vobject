@@ -44,9 +44,7 @@ class TimeZoneUtilTest extends TestCase
         );
     }
 
-    /**
-     * @dataProvider getMapping
-     */
+    #[DataProvider('getMapping')]
     public function testSlashTZ($timezonename): void
     {
         $slashTimezone = '/'.$timezonename;
@@ -414,9 +412,7 @@ HI;
         self::assertEquals($ex->getName(), $tz->getName());
     }
 
-    /**
-     * @dataProvider unSupportTimezoneProvider
-     */
+    #[DataProvider('unSupportTimezoneProvider')]
     public function testPHPUnSupportTimeZone(string $origin, string $expected): void
     {
         $tz = TimeZoneUtil::getTimeZone($origin, null, true);
@@ -424,7 +420,7 @@ HI;
         self::assertEquals($ex->getName(), $tz->getName());
     }
 
-    public function unSupportTimezoneProvider(): iterable
+    public static function unSupportTimezoneProvider(): iterable
     {
         yield 'America/Santa_Isabel' => [
             'origin' => 'America/Santa_Isabel',
@@ -483,9 +479,7 @@ HI;
         }
     }
 
-    /**
-     * @dataProvider offsetTimeZoneProvider
-     */
+    #[DataProvider('offsetTimeZoneProvider')]
     public function testOffsetTimeZones(string $origin, string $expected): void
     {
         $tz = TimeZoneUtil::getTimeZone($origin, null, true);
@@ -493,7 +487,7 @@ HI;
         self::assertEquals($ex->getName(), $tz->getName());
     }
 
-    public function offsetTimeZoneProvider(): iterable
+    public static function offsetTimeZoneProvider(): iterable
     {
         yield 'UTC-05:00' => [
             'origin' => 'UTC-05:00',
@@ -516,9 +510,7 @@ HI;
         ];
     }
 
-    /**
-     * @dataProvider letterCaseTimeZoneProvider
-     */
+    #[DataProvider('letterCaseTimeZoneProvider')]
     public function testDifferentLetterCaseTimeZone(string $origin, string $expected): void
     {
         $tz = TimeZoneUtil::getTimeZone($origin, null, true);
@@ -526,7 +518,7 @@ HI;
         self::assertEquals($ex->getName(), $tz->getName());
     }
 
-    public function letterCaseTimeZoneProvider(): iterable
+    public static function letterCaseTimeZoneProvider(): iterable
     {
         yield 'case 1' => [
             'origin' => 'Europe/paris',
@@ -549,9 +541,7 @@ HI;
         ];
     }
 
-    /**
-     * @dataProvider outlookCitiesProvider
-     */
+    #[DataProvider('outlookCitiesProvider')]
     public function testOutlookCities(string $origin, bool $failIfUncertain, string $expected): void
     {
         $tz = TimeZoneUtil::getTimeZone($origin, null, $failIfUncertain);
@@ -559,7 +549,7 @@ HI;
         self::assertEquals($ex->getName(), $tz->getName());
     }
 
-    public function outlookCitiesProvider(): iterable
+    public static function outlookCitiesProvider(): iterable
     {
         yield 'case 1' => [
             'origin' => 'TZID:(UTC+01:00) Bruxelles\, København\, Madrid\, Paris',
@@ -586,9 +576,7 @@ HI;
         ];
     }
 
-    /**
-     * @dataProvider versionTzProvider
-     */
+    #[DataProvider('versionTzProvider')]
     public function testVersionTz(string $origin, bool $failIfUncertain, string $expected): void
     {
         $tz = TimeZoneUtil::getTimeZone($origin, null, $failIfUncertain);
@@ -596,7 +584,7 @@ HI;
         self::assertEquals($ex->getName(), $tz->getName());
     }
 
-    public function versionTzProvider(): iterable
+    public static function versionTzProvider(): iterable
     {
         yield 'case 1' => [
             'origin' => 'Eastern Standard Time 1',

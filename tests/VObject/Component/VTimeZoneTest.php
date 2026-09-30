@@ -67,7 +67,7 @@ HI;
 
         $tz = new \DateTimeZone(date_default_timezone_get());
 
-        $this->assertEquals(
+        self::assertEquals(
             $tz,
             $obj->VTIMEZONE->getTimeZone()
         );
