@@ -119,9 +119,9 @@ abstract class Document extends Component
     {
         if (isset(static::$componentMap[strtoupper($name)])) {
             return call_user_func_array([$this, 'createComponent'], func_get_args());
-        } else {
-            return call_user_func_array([$this, 'createProperty'], func_get_args());
         }
+
+        return call_user_func_array([$this, 'createProperty'], func_get_args());
     }
 
     /**
@@ -186,13 +186,17 @@ abstract class Document extends Component
             $class = $this->getClassNameForPropertyValue($valueType);
         }
 
+        // According to https://datatracker.ietf.org/doc/html/rfc5545#section-3.2.20
+        // a VALUE parameter is only required when it overrides the default
+        // value type, so an unrecognised one falls back to the default class.
+        // Unlike upstream we also drop the malformed or illegal VALUE, so it is
+        // not serialized back out.
         if (is_null($class)) {
-            // If a VALUE parameter is supplied, we should use that.
             if (isset($parameters['VALUE'])) {
                 if (is_string($parameters['VALUE'])) {
                     $class = $this->getClassNameForPropertyValue($parameters['VALUE']);
                 }
-                if (is_null($class)) { // VALUE is malformed or illegal, drop it
+                if (is_null($class)) {
                     unset($parameters['VALUE']);
                     $class = $this->getClassNameForPropertyName($name);
                 }
@@ -200,6 +204,7 @@ abstract class Document extends Component
                 $class = $this->getClassNameForPropertyName($name);
             }
         }
+
         if (is_null($parameters)) {
             $parameters = [];
         }

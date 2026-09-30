@@ -178,6 +178,65 @@ ChangeLog
 * #3 Add daily occurrences to nextMonth and NextYear
 * #4 Enhance fast forward speed if no count value has been given
 
+4.6.0 (2026-05-31)
+------------------
+* #718 feat(VCard): add getByTypes method (@JimKnoxx)
+* #756 fix: Update deprecated timezone names (@ralflang)
+
+4.5.9 (2026-05-31)
+------------------
+* #759 fix(itip): handle null old calendar/event (@ChristophWurst)
+
+4.5.8 (2026-01-12)
+------------------
+
+* #721: Fix variable scope (@KristofferFM)
+* #723: Broker shouldn't add EXDATE property with floating timezone (@KristofferFM)
+* #726: Improved check on property name (@KristofferFM)
+* #727: Improve error checks in Mimedir parser (@KristofferFM)
+* #728: Removing attendee from scheduled recurring event should generate an EXDATE property (@KristofferFM)
+* #735: use RDATE in time range check and use all instances (@SebastianKrupinski)
+* #743: send participation reply on fresh event (@SebastianKrupinski)
+
+4.5.7 (2025-04-17)
+------------------
+
+* #618: Add new exchangetimezone 'Amsterdam, Berlin, Bern, Rom, Stockholm, Wien' (@chr-is)
+* #674: Allow unknown value data types for VALUE (@heiglandreas)
+* #707: add phpdoc return types for arrayaccess methods (@smhg)
+
+4.5.6 (2024-10-14)
+------------------
+
+* #662: add PHP 8.4 to CI (@phil-davis)
+* #669: fix: check if event status was changed to cancelled and generate appropriate message (@SebastianKrupinski)
+* #673: Fix Implicitly marking parameter $param as nullable is deprecated (@cedric-anne)
+* #675: refactor: Replace dirname(__FILE__) with __DIR__ (@ChristophWurst)
+* #692: Throw InvalidDataException when RRule is invalid (@mathroc)
+
+4.5.5 (2024-07-02)
+------------------
+
+* #632: Add PHP 8.3 to CI (@phil-davis)
+* #649: add lineIndex and lineString properties to a Property Node (@JohnRDOrazio)
+* #652: ITip\Broker: handle timezones in replies to exception events (@gharlan)
+* #654: chore: stop exporting php-cs-fixer config (@phil-davis)
+* #656: Yearly rrule compliance by the iterator (@kroky)
+* #658: throw ParseException when null input is provided (@phil-davis)
+* #653: Handle summer time jumps in event recurrences (@phil-davis)
+
+4.5.4 (2023-11-09)
+------------------
+
+* #619: fixed issue: Undefined index: plusminus (@sash04ek)
+* #622: Create Issue467Test.php for 619 (@sash04ek)
+* #623: docs: fix type definition for oldCalendar (@kesselb)
+
+4.5.3 (2023-01-22)
+------------------
+
+* #607: Apply 'Support sabre/xml v4' and needed code changes to 4.5 branch (@phil-davis)
+
 4.5.2 (2023-01-20)
 ------------------
 
