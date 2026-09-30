@@ -51,7 +51,7 @@ class GuessFromCustomizedTimeZone implements TimezoneGuesser
             // check standard
             $timestamp = $standardIterator->current()->getTimestamp();
             $transitions = $tz->getTransitions($timestamp + $day, $timestamp + $day + 1);
-            if (empty($transitions)) {
+            if (false === $transitions || [] === $transitions) {
                 continue;
             }
 
@@ -68,7 +68,7 @@ class GuessFromCustomizedTimeZone implements TimezoneGuesser
             // check daylight
             $timestamp = $daylightIterator->current()->getTimestamp();
             $transitions = $tz->getTransitions($timestamp + $day, $timestamp + $day + 1);
-            if (empty($transitions)) {
+            if (false === $transitions || [] === $transitions) {
                 continue;
             }
 

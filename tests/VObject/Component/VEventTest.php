@@ -2,19 +2,18 @@
 
 namespace Sabre\VObject\Component;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class VEventTest extends TestCase
 {
-    /**
-     * @dataProvider timeRangeTestData
-     */
+    #[DataProvider('timeRangeTestData')]
     public function testInTimeRange(VEvent $vevent, \DateTime $start, \DateTime $end, bool $outcome): void
     {
         self::assertEquals($outcome, $vevent->isInTimeRange($start, $end));
     }
 
-    public function timeRangeTestData(): array
+    public static function timeRangeTestData(): array
     {
         $tests = [];
 

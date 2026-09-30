@@ -2,15 +2,14 @@
 
 namespace Sabre\VObject\Property\VCard;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Sabre\VObject;
 use Sabre\VObject\Reader;
 
 class DateAndOrTimeTest extends TestCase
 {
-    /**
-     * @dataProvider dates
-     */
+    #[DataProvider('dates')]
     public function testGetJsonValue(string $input, string $output): void
     {
         $vcard = new VObject\Component\VCard();
@@ -19,7 +18,7 @@ class DateAndOrTimeTest extends TestCase
         self::assertEquals([$output], $prop->getJsonValue());
     }
 
-    public function dates(): array
+    public static function dates(): array
     {
         return [
             [

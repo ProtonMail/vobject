@@ -2,6 +2,7 @@
 
 namespace Sabre\VObject;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class TimeZoneUtilTest extends TestCase
@@ -11,24 +12,22 @@ class TimeZoneUtilTest extends TestCase
         TimeZoneUtil::clean();
     }
 
-    /**
-     * @dataProvider getMapping
-     */
+    #[DataProvider('getMapping')]
     public function testCorrectTZ(string $timezoneName): void
     {
         try {
             $tz = new \DateTimeZone($timezoneName);
             self::assertInstanceOf('DateTimeZone', $tz);
         } catch (\Exception $e) {
-            if (false !== strpos($e->getMessage(), 'Unknown or bad timezone')) {
-                $this->markTestSkipped($timezoneName.' is not (yet) supported in this PHP version. Update pecl/timezonedb');
+            if (str_contains($e->getMessage(), 'Unknown or bad timezone')) {
+                self::markTestSkipped($timezoneName.' is not (yet) supported in this PHP version. Update pecl/timezonedb');
             } else {
                 throw $e;
             }
         }
     }
 
-    public function getMapping(): array
+    public static function getMapping(): array
     {
         $map = array_merge(
             include __DIR__.'/../../lib/timezonedata/windowszones.php',
@@ -40,16 +39,12 @@ class TimeZoneUtilTest extends TestCase
 
         // PHPUNit requires an array of arrays
         return array_map(
-            function ($value) {
-                return [$value];
-            },
+            fn ($value) => [$value],
             $map
         );
     }
 
-    /**
-     * @dataProvider getMapping
-     */
+    #[DataProvider('getMapping')]
     public function testSlashTZ($timezonename): void
     {
         $slashTimezone = '/'.$timezonename;
@@ -200,9 +195,7 @@ HI;
         self::assertNotSame($ex->getName(), $tz->getName());
     }
 
-    /**
-     * @dataProvider getPHPTimeZoneIdentifiers
-     */
+    #[DataProvider('getPHPTimeZoneIdentifiers')]
     public function testTimeZoneIdentifiers(string $tzid): void
     {
         $tz = TimeZoneUtil::getTimeZone($tzid);
@@ -211,9 +204,7 @@ HI;
         self::assertEquals($ex->getName(), $tz->getName());
     }
 
-    /**
-     * @dataProvider getPHPTimeZoneBCIdentifiers
-     */
+    #[DataProvider('getPHPTimeZoneBCIdentifiers')]
     public function testTimeZoneBCIdentifiers(string $tzid): void
     {
         /*
@@ -224,8 +215,8 @@ HI;
          * that should be released in Feb 2023.
          */
         $versionOfPHP = \phpversion();
-        if ((('8.1.14' == $versionOfPHP) || ('8.2.1' == $versionOfPHP)) && \str_contains($tzid, '+')) {
-            $this->markTestSkipped("Timezone ids containing '+' do not work on PHP $versionOfPHP");
+        if ((('8.1.14' === $versionOfPHP) || ('8.2.1' === $versionOfPHP)) && \str_contains($tzid, '+')) {
+            self::markTestSkipped("Timezone ids containing '+' do not work on PHP $versionOfPHP");
         }
         $tz = TimeZoneUtil::getTimeZone($tzid);
         $ex = new \DateTimeZone($tzid);
@@ -233,27 +224,21 @@ HI;
         self::assertEquals($ex->getName(), $tz->getName());
     }
 
-    public function getPHPTimeZoneIdentifiers(): array
+    public static function getPHPTimeZoneIdentifiers(): array
     {
         // PHPUNit requires an array of arrays
         return array_map(
-            function ($value) {
-                return [$value];
-            },
+            fn ($value) => [$value],
             // FIXME remove the filter after finishing timezone migration
-            array_filter(\DateTimeZone::listIdentifiers(), static function (string $timezone) {
-                return 'Europe/Kyiv' !== $timezone;
-            })
+            array_filter(\DateTimeZone::listIdentifiers(), static fn (string $timezone) => 'Europe/Kyiv' !== $timezone)
         );
     }
 
-    public function getPHPTimeZoneBCIdentifiers(): array
+    public static function getPHPTimeZoneBCIdentifiers(): array
     {
         // PHPUNit requires an array of arrays
         return array_map(
-            function ($value) {
-                return [$value];
-            },
+            fn ($value) => [$value],
             include __DIR__.'/../../lib/timezonedata/php-bc.php'
         );
     }
@@ -427,9 +412,7 @@ HI;
         self::assertEquals($ex->getName(), $tz->getName());
     }
 
-    /**
-     * @dataProvider unSupportTimezoneProvider
-     */
+    #[DataProvider('unSupportTimezoneProvider')]
     public function testPHPUnSupportTimeZone(string $origin, string $expected): void
     {
         $tz = TimeZoneUtil::getTimeZone($origin, null, true);
@@ -437,7 +420,7 @@ HI;
         self::assertEquals($ex->getName(), $tz->getName());
     }
 
-    public function unSupportTimezoneProvider(): iterable
+    public static function unSupportTimezoneProvider(): iterable
     {
         yield 'America/Santa_Isabel' => [
             'origin' => 'America/Santa_Isabel',
@@ -496,9 +479,7 @@ HI;
         }
     }
 
-    /**
-     * @dataProvider offsetTimeZoneProvider
-     */
+    #[DataProvider('offsetTimeZoneProvider')]
     public function testOffsetTimeZones(string $origin, string $expected): void
     {
         $tz = TimeZoneUtil::getTimeZone($origin, null, true);
@@ -506,7 +487,7 @@ HI;
         self::assertEquals($ex->getName(), $tz->getName());
     }
 
-    public function offsetTimeZoneProvider(): iterable
+    public static function offsetTimeZoneProvider(): iterable
     {
         yield 'UTC-05:00' => [
             'origin' => 'UTC-05:00',
@@ -529,9 +510,7 @@ HI;
         ];
     }
 
-    /**
-     * @dataProvider letterCaseTimeZoneProvider
-     */
+    #[DataProvider('letterCaseTimeZoneProvider')]
     public function testDifferentLetterCaseTimeZone(string $origin, string $expected): void
     {
         $tz = TimeZoneUtil::getTimeZone($origin, null, true);
@@ -539,7 +518,7 @@ HI;
         self::assertEquals($ex->getName(), $tz->getName());
     }
 
-    public function letterCaseTimeZoneProvider(): iterable
+    public static function letterCaseTimeZoneProvider(): iterable
     {
         yield 'case 1' => [
             'origin' => 'Europe/paris',
@@ -562,9 +541,7 @@ HI;
         ];
     }
 
-    /**
-     * @dataProvider outlookCitiesProvider
-     */
+    #[DataProvider('outlookCitiesProvider')]
     public function testOutlookCities(string $origin, bool $failIfUncertain, string $expected): void
     {
         $tz = TimeZoneUtil::getTimeZone($origin, null, $failIfUncertain);
@@ -572,7 +549,7 @@ HI;
         self::assertEquals($ex->getName(), $tz->getName());
     }
 
-    public function outlookCitiesProvider(): iterable
+    public static function outlookCitiesProvider(): iterable
     {
         yield 'case 1' => [
             'origin' => 'TZID:(UTC+01:00) Bruxelles\, København\, Madrid\, Paris',
@@ -599,9 +576,7 @@ HI;
         ];
     }
 
-    /**
-     * @dataProvider versionTzProvider
-     */
+    #[DataProvider('versionTzProvider')]
     public function testVersionTz(string $origin, bool $failIfUncertain, string $expected): void
     {
         $tz = TimeZoneUtil::getTimeZone($origin, null, $failIfUncertain);
@@ -609,7 +584,7 @@ HI;
         self::assertEquals($ex->getName(), $tz->getName());
     }
 
-    public function versionTzProvider(): iterable
+    public static function versionTzProvider(): iterable
     {
         yield 'case 1' => [
             'origin' => 'Eastern Standard Time 1',

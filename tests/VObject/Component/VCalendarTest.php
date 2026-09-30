@@ -2,6 +2,7 @@
 
 namespace Sabre\VObject\Component;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Sabre\VObject;
 use Sabre\VObject\InvalidDataException;
@@ -10,9 +11,7 @@ class VCalendarTest extends TestCase
 {
     use VObject\PHPUnitAssertions;
 
-    /**
-     * @dataProvider expandData
-     */
+    #[DataProvider('expandData')]
     public function testExpand(string $input, string $output, string $timeZone = 'UTC', string $start = '2011-12-01', string $end = '2011-12-31'): void
     {
         $vcal = VObject\Reader::read($input);
@@ -31,7 +30,7 @@ class VCalendarTest extends TestCase
         self::assertVObjectEqualsVObject($output, $vcal->serialize());
     }
 
-    public function expandData(): array
+    public static function expandData(): array
     {
         $tests = [];
 

@@ -15,9 +15,9 @@ class FastForwardToEndTest extends TestCase
         $ruleIterator->fastForwardToEnd();
         $ru = getrusage();
         $endTime = $ru['ru_utime.tv_sec'] * 1000000 + $ru['ru_utime.tv_usec'];
-        $enfoceTiming && $this->assertLessThan(self::FF_TIMEOUT, $endTime - $startTime);
-        $this->assertTrue($ruleIterator->valid());
-        $this->assertNotNull($ruleIterator->current());
+        $enfoceTiming && self::assertLessThan(self::FF_TIMEOUT, $endTime - $startTime);
+        self::assertTrue($ruleIterator->valid());
+        self::assertNotNull($ruleIterator->current());
     }
 
     public function testFastForwardToEndWithoutEndYearlyBasic(): void
@@ -42,7 +42,7 @@ class FastForwardToEndTest extends TestCase
             ->setDate(9746, 10, 23)
             ->setTime(0, 0, 0)
             ->getTimestamp();
-        $this->assertEquals($expected, $rrule->current()->getTimestamp());
+        self::assertEquals($expected, $rrule->current()->getTimestamp());
     }
 
     public function testFastForwardToEndUntilYearlyBasic(): void
@@ -57,7 +57,7 @@ class FastForwardToEndTest extends TestCase
             ->setDate(9746, 10, 23)
             ->setTime(0, 0, 0)
             ->getTimestamp();
-        $this->assertEquals($expected, $rrule->current()->getTimestamp());
+        self::assertEquals($expected, $rrule->current()->getTimestamp());
     }
 
     public function testFastForwardToEndCountYearlyByYearDay(): void
@@ -73,7 +73,7 @@ class FastForwardToEndTest extends TestCase
             ->setDate(5303, 1, 20)
             ->setTime(0, 0, 0)
             ->getTimestamp();
-        $this->assertEquals($expected, $rrule->current()->getTimestamp());
+        self::assertEquals($expected, $rrule->current()->getTimestamp());
     }
 
     public function testFastForwardToEndUntilYearlyByYearDay(): void
@@ -88,7 +88,7 @@ class FastForwardToEndTest extends TestCase
             ->setDate(5303, 1, 20)
             ->setTime(0, 0, 0)
             ->getTimestamp();
-        $this->assertEquals($expected, $rrule->current()->getTimestamp());
+        self::assertEquals($expected, $rrule->current()->getTimestamp());
     }
 
     /*
@@ -106,7 +106,7 @@ class FastForwardToEndTest extends TestCase
             ->setDate(2019, 12, 30)
             ->setTime(0, 0, 0)
             ->getTimestamp();
-        $this->assertEquals($expected, $rrule->current()->getTimestamp());
+        self::assertEquals($expected, $rrule->current()->getTimestamp());
     }
 
     public function testFastForwardToEndUntilYearlyByWeekNo()
@@ -121,7 +121,7 @@ class FastForwardToEndTest extends TestCase
             ->setDate(2019, 12, 30)
             ->setTime(0, 0, 0)
             ->getTimestamp();
-        $this->assertEquals($expected, $rrule->current()->getTimestamp());
+        self::assertEquals($expected, $rrule->current()->getTimestamp());
     }
     */
 
@@ -137,7 +137,7 @@ class FastForwardToEndTest extends TestCase
             ->setDate(4226, 1, 1)
             ->setTime(8, 30, 56)
             ->getTimestamp();
-        $this->assertEquals($expected, $rrule->current()->getTimestamp());
+        self::assertEquals($expected, $rrule->current()->getTimestamp());
     }
 
     public function testFastForwardToEndUntilYearlyAdvanced()
@@ -151,7 +151,7 @@ class FastForwardToEndTest extends TestCase
             ->setDate(4218, 1, 25)
             ->setTime(8, 30, 56)
             ->getTimestamp();
-        $this->assertEquals($expected, $rrule->current()->getTimestamp());
+        self::assertEquals($expected, $rrule->current()->getTimestamp());
     }
 
     public function testFastForwardToEndCountMonthlyBasic()
@@ -166,7 +166,7 @@ class FastForwardToEndTest extends TestCase
             ->setDate(2804, 1, 23)
             ->setTime(22, 42, 31)
             ->getTimestamp();
-        $this->assertEquals($expected, $rrule->current()->getTimestamp());
+        self::assertEquals($expected, $rrule->current()->getTimestamp());
     }
 
     public function testFastForwardToEndUntilMonthlyBasic()
@@ -180,7 +180,7 @@ class FastForwardToEndTest extends TestCase
             ->setDate(2803, 12, 23)
             ->setTime(22, 42, 31)
             ->getTimestamp();
-        $this->assertEquals($expected, $rrule->current()->getTimestamp());
+        self::assertEquals($expected, $rrule->current()->getTimestamp());
     }
 
     /**
@@ -197,7 +197,7 @@ class FastForwardToEndTest extends TestCase
         $expected = (new \DateTime('midnight', new \DateTimeZone('America/New_York')))
             ->setDate(3398, 10, 31)
             ->getTimestamp();
-        $this->assertEquals($expected, $rrule->current()->getTimestamp());
+        self::assertEquals($expected, $rrule->current()->getTimestamp());
     }
 
     /**
@@ -213,7 +213,7 @@ class FastForwardToEndTest extends TestCase
 
         $expected = (new \DateTime('midnight', new \DateTimeZone('America/New_York')))
             ->setDate(3398, 7, 31);
-        $this->assertEquals($expected->getTimestamp(), $rrule->current()->getTimestamp());
+        self::assertEquals($expected->getTimestamp(), $rrule->current()->getTimestamp());
     }
 
     public function testFastForwardToEndUntilMonthly31thDay()
@@ -226,7 +226,7 @@ class FastForwardToEndTest extends TestCase
         $expected = (new \DateTime('midnight', new \DateTimeZone('America/New_York')))
             ->setDate(3398, 8, 31)
             ->getTimestamp();
-        $this->assertEquals($expected, $rrule->current()->getTimestamp());
+        self::assertEquals($expected, $rrule->current()->getTimestamp());
     }
 
     /**
@@ -244,7 +244,7 @@ class FastForwardToEndTest extends TestCase
         $expected = (new \DateTime('midnight', new \DateTimeZone('America/New_York')))
             ->setDate(2386, 9, 17)
             ->getTimestamp();
-        $this->assertEquals($expected, $rrule->current()->getTimestamp());
+        self::assertEquals($expected, $rrule->current()->getTimestamp());
     }
 
     public function testFastForwardToEndUntilMonthlyAdvanced()
@@ -258,7 +258,7 @@ class FastForwardToEndTest extends TestCase
         $expected = (new \DateTime('midnight', new \DateTimeZone('America/New_York')))
             ->setDate(2386, 9, 9)
             ->getTimestamp();
-        $this->assertEquals($expected, $rrule->current()->getTimestamp());
+        self::assertEquals($expected, $rrule->current()->getTimestamp());
     }
 
     public function testFastForwardToEndCountDailyBasic()
@@ -273,7 +273,7 @@ class FastForwardToEndTest extends TestCase
         $expected = (new \DateTime('midnight', new \DateTimeZone($timezone)))
             ->setDate(2244, 8, 6)
             ->getTimestamp();
-        $this->assertEquals($expected, $rrule->current()->getTimestamp());
+        self::assertEquals($expected, $rrule->current()->getTimestamp());
     }
 
     public function testFastForwardToEndUntilDailyBasic()
@@ -287,7 +287,7 @@ class FastForwardToEndTest extends TestCase
         $expected = (new \DateTime('midnight', new \DateTimeZone($timezone)))
             ->setDate(2244, 8, 6)
             ->getTimestamp();
-        $this->assertEquals($expected, $rrule->current()->getTimestamp());
+        self::assertEquals($expected, $rrule->current()->getTimestamp());
     }
 
     public function testFastForwardToEndCountDailyAdvanced()
@@ -304,7 +304,7 @@ class FastForwardToEndTest extends TestCase
             ->setDate(2062, 1, 13)
             ->setTime(18, 0, 0)
             ->getTimestamp();
-        $this->assertEquals($expected, $rrule->current()->getTimestamp());
+        self::assertEquals($expected, $rrule->current()->getTimestamp());
     }
 
     public function testFastForwardToEndUntilDailyAdvanced()
@@ -320,7 +320,7 @@ class FastForwardToEndTest extends TestCase
             ->setDate(2062, 1, 13)
             ->setTime(18, 0, 0)
             ->getTimestamp();
-        $this->assertEquals($expected, $rrule->current()->getTimestamp());
+        self::assertEquals($expected, $rrule->current()->getTimestamp());
     }
 
     public function testFastForwardToEndCountHourlyBasic()
@@ -336,7 +336,7 @@ class FastForwardToEndTest extends TestCase
             ->setDate(1982, 3, 21)
             ->setTime(2, 12, 34)
             ->getTimestamp();
-        $this->assertEquals($expected, $rrule->current()->getTimestamp());
+        self::assertEquals($expected, $rrule->current()->getTimestamp());
     }
 
     public function testFastForwardToEndUntilHourlyBasic()
@@ -351,6 +351,6 @@ class FastForwardToEndTest extends TestCase
             ->setDate(1982, 3, 21)
             ->setTime(2, 12, 34)
             ->getTimestamp();
-        $this->assertEquals($expected, $rrule->current()->getTimestamp());
+        self::assertEquals($expected, $rrule->current()->getTimestamp());
     }
 }

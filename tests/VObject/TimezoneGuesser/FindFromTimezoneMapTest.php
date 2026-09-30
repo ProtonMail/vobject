@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Sabre\VObject\TimezoneGuesser;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class FindFromTimezoneMapTest extends TestCase
@@ -11,9 +12,8 @@ class FindFromTimezoneMapTest extends TestCase
     /**
      * Verify that previously-deprecated IANA names have been replaced with
      * their canonical successors and resolve correctly.
-     *
-     * @dataProvider updatedTimezoneProvider
      */
+    #[DataProvider('updatedTimezoneProvider')]
     public function testUpdatedTimezonesResolve(string $mapKey, string $expectedOlson): void
     {
         $finder = new FindFromTimezoneMap();
@@ -23,7 +23,7 @@ class FindFromTimezoneMapTest extends TestCase
         self::assertSame($expectedOlson, $tz->getName());
     }
 
-    public function updatedTimezoneProvider(): array
+    public static function updatedTimezoneProvider(): array
     {
         return [
             // windowszones.php

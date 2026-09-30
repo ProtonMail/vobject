@@ -44,7 +44,7 @@ class FindFromOffsetName implements TimezoneFinder
             $tzid = new \DateTimeZone($tzid);
 
             return new \DateTimeZone(self::$offsetTimezones[$tzid->getName()]) ?? null;
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             return null;
         }
     }

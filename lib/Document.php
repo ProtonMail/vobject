@@ -118,10 +118,10 @@ abstract class Document extends Component
     public function create(string $name)
     {
         if (isset(static::$componentMap[strtoupper($name)])) {
-            return call_user_func_array([$this, 'createComponent'], func_get_args());
+            return $this->createComponent(...func_get_args());
         }
 
-        return call_user_func_array([$this, 'createProperty'], func_get_args());
+        return $this->createProperty(...func_get_args());
     }
 
     /**
@@ -146,9 +146,7 @@ abstract class Document extends Component
         if (isset(static::$componentMap[$name])) {
             $class = static::$componentMap[$name];
         }
-        if (is_null($children)) {
-            $children = [];
-        }
+        $children ??= [];
 
         return new $class($this, $name, $children, $defaults);
     }
@@ -205,9 +203,7 @@ abstract class Document extends Component
             }
         }
 
-        if (is_null($parameters)) {
-            $parameters = [];
-        }
+        $parameters ??= [];
 
         return new $class($this, $name, $value, $parameters, $group, $lineIndex, $lineString);
     }

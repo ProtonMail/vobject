@@ -2,6 +2,7 @@
 
 namespace Sabre\VObject\Recur;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Sabre\VObject\InvalidDataException;
 
@@ -345,7 +346,7 @@ class RRuleIteratorTest extends TestCase
         );
     }
 
-    /** @dataProvider invalidFreqByCombinationProviders */
+    #[DataProvider('invalidFreqByCombinationProviders')]
     public function testInvalidFreqByCombination(string $rule): void
     {
         $this->expectException(InvalidDataException::class);
@@ -356,7 +357,7 @@ class RRuleIteratorTest extends TestCase
         );
     }
 
-    public function invalidFreqByCombinationProviders(): iterable
+    public static function invalidFreqByCombinationProviders(): iterable
     {
         return [
             ['FREQ=DAILY;BYWEEKNO=13,15,50'],
@@ -1253,15 +1254,15 @@ class RRuleIteratorTest extends TestCase
         ?string $fastForward = null,
         string $tz = 'UTC',
         bool $runTillTheEnd = false,
-        bool $yearlySkipUpperLimit = true
+        bool $yearlySkipUpperLimit = true,
     ): void {
         $dt = new \DateTime($start, new \DateTimeZone($tz));
         $parser = new RRuleIterator($rule, $dt, $yearlySkipUpperLimit);
 
-        $this->assertEquals($expectedFreq, $parser->getFrequency());
-        $this->assertEquals($expectedCount, $parser->getCount());
-        $this->assertEquals($expectedInterval, $parser->getInterval());
-        $this->assertEquals($expectedUntil, $parser->getUntil());
+        self::assertEquals($expectedFreq, $parser->getFrequency());
+        self::assertEquals($expectedCount, $parser->getCount());
+        self::assertEquals($expectedInterval, $parser->getInterval());
+        self::assertEquals($expectedUntil, $parser->getUntil());
 
         if ($fastForward) {
             $parser->fastForward(new \DateTime($fastForward));
