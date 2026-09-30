@@ -1,6 +1,10 @@
 ChangeLog
 =========
 
+4.35.0 (2026-09-30)
+-------------------
+* #116 Merge upstream master 2026-05-31 (4.6.0)
+
 4.34.0 (2025-07-23)
 -------------------
 * #114 Convert 'Western/Central Europe' tz to 'Europe/Prague'
