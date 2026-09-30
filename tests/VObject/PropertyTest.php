@@ -5,6 +5,7 @@ namespace Sabre\VObject;
 use PHPUnit\Framework\TestCase;
 use Sabre\VObject\Component\VCalendar;
 use Sabre\VObject\Component\VCard;
+use Sabre\VObject\Property\ICalendar\DateTime;
 
 class PropertyTest extends TestCase
 {
@@ -390,5 +391,17 @@ class PropertyTest extends TestCase
 
         self::assertEquals('ENCODING=B is not valid for this document type.', $result[0]['message']);
         self::assertEquals(3, $result[0]['level']);
+    }
+
+    public function testUnknownValuesWillBeIgnored(): void
+    {
+        $cal = new VCalendar();
+        $property = $cal->createProperty('DTSTAMP', '20240101T000000Z', ['VALUE' => 'DATETIME']);
+
+        // Unlike upstream, Proton drops an unknown VALUE parameter.
+        self::assertEquals("DTSTAMP:20240101T000000Z\r\n", $property->serialize());
+
+        self::assertInstanceOf(DateTime::class, $property);
+        self::assertCount(0, $property->parameters());
     }
 }

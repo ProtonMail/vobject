@@ -197,11 +197,10 @@ END:VCALENDAR
 
     public function testUnrepairableRRule(): void
     {
-        $calendar = new VCalendar();
-
         $this->expectException(InvalidDataException::class);
-
+        $calendar = new VCalendar();
         $property = $calendar->createProperty('RRULE', 'IAmNotARRule');
+        $property->validate(Node::REPAIR);
     }
 
     public function testValidateInvalidByMonthRruleWithRepair(): void

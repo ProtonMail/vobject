@@ -1204,4 +1204,125 @@ ICS,
 
         $this->parse($oldMessage, $newMessage, $expected);
     }
+
+    public function testNewEventWithReply(): void
+    {
+        $oldMessage = null;
+
+        $newMessage = <<<ICS
+BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+UID:foobar
+SUMMARY:Team meeting
+SEQUENCE:1
+ORGANIZER;CN=Strunk:mailto:strunk@example.org
+ATTENDEE;PARTSTAT=ACCEPTED;CN=One:mailto:one@example.org
+DTSTART:20140716T120000Z
+END:VEVENT
+END:VCALENDAR
+ICS;
+
+        $version = \Sabre\VObject\Version::VERSION;
+
+        $expected = [
+            [
+                'uid' => 'foobar',
+                'method' => 'REPLY',
+                'component' => 'VEVENT',
+                'sender' => 'mailto:one@example.org',
+                'senderName' => 'One',
+                'recipient' => 'mailto:strunk@example.org',
+                'recipientName' => 'Strunk',
+                'message' => <<<ICS
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Sabre//Sabre VObject $version//EN
+CALSCALE:GREGORIAN
+METHOD:REPLY
+BEGIN:VEVENT
+UID:foobar
+DTSTAMP:**ANY**
+SEQUENCE:1
+DTSTART:20140716T120000Z
+SUMMARY:Team meeting
+ORGANIZER;CN=Strunk:mailto:strunk@example.org
+ATTENDEE;PARTSTAT=ACCEPTED;CN=One:mailto:one@example.org
+END:VEVENT
+END:VCALENDAR
+ICS,
+            ],
+        ];
+
+        $this->parse($oldMessage, $newMessage, $expected);
+    }
+
+    /**
+     * Test that adding EXDATE entries when oldEventInfo doesn't have exdate
+     * (e.g., when updating a newly created event) doesn't cause a TypeError.
+     *
+     * This tests the scenario where an attendee receives a new recurring event
+     * invitation with EXDATE entries already present. Since there's no old calendar,
+     * oldEventInfo is initialized with only minimal keys and lacks 'exdate'.
+     */
+    public function testAddExdateWithoutPreviousExdate(): void
+    {
+        // No old message - this is a new event invitation
+        $oldMessage = null;
+
+        // New message: recurring event with EXDATE already present
+        $newMessage = <<<ICS
+BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+UID:foobar
+SEQUENCE:1
+DTSTART:20140811T200000Z
+RRULE:FREQ=WEEKLY
+ORGANIZER:mailto:organizer@example.org
+ATTENDEE;PARTSTAT=ACCEPTED:mailto:one@example.org
+EXDATE:20140818T200000Z
+END:VEVENT
+END:VCALENDAR
+ICS;
+
+        $version = \Sabre\VObject\Version::VERSION;
+        $expected = [
+            [
+                'uid' => 'foobar',
+                'method' => 'REPLY',
+                'component' => 'VEVENT',
+                'sender' => 'mailto:one@example.org',
+                'senderName' => null,
+                'recipient' => 'mailto:organizer@example.org',
+                'recipientName' => null,
+                'message' => <<<ICS
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Sabre//Sabre VObject $version//EN
+CALSCALE:GREGORIAN
+METHOD:REPLY
+BEGIN:VEVENT
+UID:foobar
+DTSTAMP:**ANY**
+SEQUENCE:1
+DTSTART:20140811T200000Z
+ORGANIZER:mailto:organizer@example.org
+ATTENDEE;PARTSTAT=ACCEPTED:mailto:one@example.org
+END:VEVENT
+BEGIN:VEVENT
+UID:foobar
+DTSTAMP:**ANY**
+SEQUENCE:1
+DTSTART:20140818T200000Z
+RECURRENCE-ID:20140818T200000Z
+ORGANIZER:mailto:organizer@example.org
+ATTENDEE;PARTSTAT=DECLINED:mailto:one@example.org
+END:VEVENT
+END:VCALENDAR
+ICS,
+            ],
+        ];
+        $this->parse($oldMessage, $newMessage, $expected);
+    }
 }
