@@ -2,6 +2,7 @@
 
 namespace Sabre\VObject;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class TimeZoneUtilTest extends TestCase
@@ -11,24 +12,22 @@ class TimeZoneUtilTest extends TestCase
         TimeZoneUtil::clean();
     }
 
-    /**
-     * @dataProvider getMapping
-     */
+    #[DataProvider('getMapping')]
     public function testCorrectTZ(string $timezoneName): void
     {
         try {
             $tz = new \DateTimeZone($timezoneName);
             self::assertInstanceOf('DateTimeZone', $tz);
         } catch (\Exception $e) {
-            if (false !== strpos($e->getMessage(), 'Unknown or bad timezone')) {
-                $this->markTestSkipped($timezoneName.' is not (yet) supported in this PHP version. Update pecl/timezonedb');
+            if (str_contains($e->getMessage(), 'Unknown or bad timezone')) {
+                self::markTestSkipped($timezoneName.' is not (yet) supported in this PHP version. Update pecl/timezonedb');
             } else {
                 throw $e;
             }
         }
     }
 
-    public function getMapping(): array
+    public static function getMapping(): array
     {
         $map = array_merge(
             include __DIR__.'/../../lib/timezonedata/windowszones.php',
@@ -40,9 +39,7 @@ class TimeZoneUtilTest extends TestCase
 
         // PHPUNit requires an array of arrays
         return array_map(
-            function ($value) {
-                return [$value];
-            },
+            fn ($value) => [$value],
             $map
         );
     }
@@ -200,9 +197,7 @@ HI;
         self::assertNotSame($ex->getName(), $tz->getName());
     }
 
-    /**
-     * @dataProvider getPHPTimeZoneIdentifiers
-     */
+    #[DataProvider('getPHPTimeZoneIdentifiers')]
     public function testTimeZoneIdentifiers(string $tzid): void
     {
         $tz = TimeZoneUtil::getTimeZone($tzid);
@@ -211,9 +206,7 @@ HI;
         self::assertEquals($ex->getName(), $tz->getName());
     }
 
-    /**
-     * @dataProvider getPHPTimeZoneBCIdentifiers
-     */
+    #[DataProvider('getPHPTimeZoneBCIdentifiers')]
     public function testTimeZoneBCIdentifiers(string $tzid): void
     {
         /*
@@ -224,8 +217,8 @@ HI;
          * that should be released in Feb 2023.
          */
         $versionOfPHP = \phpversion();
-        if ((('8.1.14' == $versionOfPHP) || ('8.2.1' == $versionOfPHP)) && \str_contains($tzid, '+')) {
-            $this->markTestSkipped("Timezone ids containing '+' do not work on PHP $versionOfPHP");
+        if ((('8.1.14' === $versionOfPHP) || ('8.2.1' === $versionOfPHP)) && \str_contains($tzid, '+')) {
+            self::markTestSkipped("Timezone ids containing '+' do not work on PHP $versionOfPHP");
         }
         $tz = TimeZoneUtil::getTimeZone($tzid);
         $ex = new \DateTimeZone($tzid);
@@ -233,27 +226,21 @@ HI;
         self::assertEquals($ex->getName(), $tz->getName());
     }
 
-    public function getPHPTimeZoneIdentifiers(): array
+    public static function getPHPTimeZoneIdentifiers(): array
     {
         // PHPUNit requires an array of arrays
         return array_map(
-            function ($value) {
-                return [$value];
-            },
+            fn ($value) => [$value],
             // FIXME remove the filter after finishing timezone migration
-            array_filter(\DateTimeZone::listIdentifiers(), static function (string $timezone) {
-                return 'Europe/Kyiv' !== $timezone;
-            })
+            array_filter(\DateTimeZone::listIdentifiers(), static fn (string $timezone) => 'Europe/Kyiv' !== $timezone)
         );
     }
 
-    public function getPHPTimeZoneBCIdentifiers(): array
+    public static function getPHPTimeZoneBCIdentifiers(): array
     {
         // PHPUNit requires an array of arrays
         return array_map(
-            function ($value) {
-                return [$value];
-            },
+            fn ($value) => [$value],
             include __DIR__.'/../../lib/timezonedata/php-bc.php'
         );
     }

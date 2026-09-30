@@ -2,6 +2,7 @@
 
 namespace Sabre\VObject\Recur;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Sabre\VObject\InvalidDataException;
 

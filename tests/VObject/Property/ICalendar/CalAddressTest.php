@@ -2,13 +2,12 @@
 
 namespace Sabre\VObject\Property\ICalendar;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class CalAddressTest extends TestCase
 {
-    /**
-     * @dataProvider values
-     */
+    #[DataProvider('values')]
     public function testGetNormalizedValue(string $expected, string $input): void
     {
         $vobj = new \Sabre\VObject\Component\VCalendar();
@@ -20,7 +19,7 @@ class CalAddressTest extends TestCase
         );
     }
 
-    public function values(): array
+    public static function values(): array
     {
         return [
             ['mailto:a@b.com', 'mailto:a@b.com'],

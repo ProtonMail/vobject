@@ -12,25 +12,28 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-versions: ['8.0', '8.1', '8.2', '8.3', '8.4']
+        php-versions: ['8.3', '8.4']
         coverage: ['pcov']
         code-style: ['no']
         code-analysis: ['no']
+        rector-check: ['no']
         include:
-          - php-versions: '7.4'
+          - php-versions: '8.2'
             coverage: 'pcov'
             code-style: 'yes'
             code-analysis: 'yes'
+            rector-check: 'no'
           - php-versions: '8.5'
             coverage: 'pcov'
             code-style: 'no'
             code-analysis: 'yes'
+            rector-check: 'yes'
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
       - name: Setup PHP, with composer and extensions
-        uses: shivammathur/setup-php@v2 #https://github.com/shivammathur/setup-php
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2.37.2
         with:
           php-version: ${{ matrix.php-versions }}
           extensions: mbstring, dom, fileinfo, mysql, redis, opcache
@@ -42,7 +45,7 @@ jobs:
         run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
       - name: Cache composer dependencies
-        uses: actions/cache@v5
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           # Use composer.json for key, if composer.lock is not committed.
@@ -61,9 +64,13 @@ jobs:
         if: matrix.code-analysis == 'yes'
         run: composer phpstan
 
+      - name: Code Refactoring (rector)
+        if: matrix.rector-check == 'yes'
+        run: composer rector-check
+
       - name: Test with phpunit
         run: vendor/bin/phpunit --configuration tests/phpunit.xml --coverage-clover clover.xml
 
       - name: Code Coverage
-        uses: codecov/codecov-action@v6
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
         if: matrix.coverage != 'none'

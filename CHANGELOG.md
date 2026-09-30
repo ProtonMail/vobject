@@ -182,6 +182,23 @@ ChangeLog
 * #3 Add daily occurrences to nextMonth and NextYear
 * #4 Enhance fast forward speed if no count value has been given
 
+5.0.0 (2026-07-07)
+------------------
+* #767 Drop PHP 7.4 8.0 8.1 and support PHP 8.2 and up (@phil-davis)
+* #769 fix: minor code fixes (@phil-davis)
+* #586 PHP types (@tcitworld @phil-davis)
+
+This major release v5 declares function parameter and return types across the
+codebase. Users will need to be careful to call functions/methods with the
+correct types.
+
+Support for PHP below 8.2 has been dropped.
+This release supports PHP 8.2 and up.
+
+4.6.1 (2026-07-07)
+------------------
+* #776 fix: preserve UTC 'Z' indicator in Period JSON serialization (@bastien-roucaries @guimard @phil-davis)
+
 4.6.0 (2026-05-31)
 ------------------
 * #718 feat(VCard): add getByTypes method (@JimKnoxx)

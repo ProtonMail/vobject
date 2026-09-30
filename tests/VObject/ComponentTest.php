@@ -2,6 +2,7 @@
 
 namespace Sabre\VObject;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Sabre\VObject\Component\VCalendar;
 use Sabre\VObject\Component\VCard;
@@ -459,8 +460,9 @@ class ComponentTest extends TestCase
     }
 
     /**
-     * @dataProvider ruleData
+     * @param string[] $componentList
      */
+    #[DataProvider('ruleData')]
     public function testValidateRules(array $componentList, int $errorCount): void
     {
         $vcard = new VCard();
@@ -546,7 +548,7 @@ class ComponentTest extends TestCase
         self::assertCount(1, $component->GIR);
     }
 
-    public function ruleData(): array
+    public static function ruleData(): array
     {
         return [
             [[], 2],
