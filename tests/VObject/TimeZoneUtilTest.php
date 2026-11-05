@@ -412,6 +412,26 @@ HI;
         self::assertEquals($ex->getName(), $tz->getName());
     }
 
+    #[DataProvider('canadaPermanentTimeZoneProvider')]
+    public function testCanadaPermanentTimeZones(string $origin, string $expected): void
+    {
+        $tz = TimeZoneUtil::getTimeZone($origin, null, true);
+        self::assertSame($expected, $tz->getName());
+    }
+
+    public static function canadaPermanentTimeZoneProvider(): iterable
+    {
+        yield 'Alberta Standard Time' => ['Alberta Standard Time', 'America/Edmonton'];
+        yield 'Alberta Standard Time 1' => ['Alberta Standard Time 1', 'America/Edmonton'];
+        yield 'Mountain Time (Alberta)' => ['Mountain Time (Alberta)', 'America/Edmonton'];
+        yield '(UTC-06:00) Mountain Time (Alberta)' => ['(UTC-06:00) Mountain Time (Alberta)', 'America/Edmonton'];
+        yield 'Manitoba Standard Time' => ['Manitoba Standard Time', 'America/Winnipeg'];
+        yield 'Manitoba Standard Time 1' => ['Manitoba Standard Time 1', 'America/Winnipeg'];
+        yield 'British Columbia Standard Time' => ['British Columbia Standard Time', 'America/Vancouver'];
+        yield 'Pacific Time (British Columbia)' => ['Pacific Time (British Columbia)', 'America/Vancouver'];
+        yield '(UTC-07:00) Pacific Time (British Columbia)' => ['(UTC-07:00) Pacific Time (British Columbia)', 'America/Vancouver'];
+    }
+
     #[DataProvider('unSupportTimezoneProvider')]
     public function testPHPUnSupportTimeZone(string $origin, string $expected): void
     {
