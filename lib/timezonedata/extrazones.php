@@ -206,4 +206,9 @@ return [
     'PST' => 'America/Los_Angeles',
     'Gulf Standard Time' => 'Asia/Dubai',
     'Western/Central Europe' => 'Europe/Prague',
+    'Alberta Standard Time' => 'America/Edmonton',
+    'Mountain Time (Alberta)' => 'America/Edmonton',
+    'Manitoba Standard Time' => 'America/Winnipeg',
+    'British Columbia Standard Time' => 'America/Vancouver',
+    'Pacific Time (British Columbia)' => 'America/Vancouver',
 ];
