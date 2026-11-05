@@ -1,6 +1,10 @@
 ChangeLog
 =========
 
+5.1.0 (2026-11-05)
+------------------
+* #120 Map new Microsoft time zones for Alberta, Manitoba and British Columbia
+
 5.0.0 (2026-09-30)
 ------------------
 * #118 Merge upstream sabre-io/vobject 5.0.0
